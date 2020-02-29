@@ -8,12 +8,12 @@
       fit
       highlight-current-row
     >
-      <el-table-column align="center" label="ID" width="95">
+      <el-table-column align="center" label="新闻ID" width="95">
         <template slot-scope="scope">
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="Title">
+      <el-table-column label="新闻标题">
         <template slot-scope="scope">
           {{ scope.row.title }}
         </template>
@@ -70,6 +70,7 @@ export default {
     fetchData() {
       this.listLoading = true
       getList().then(response => {
+        console.log(response)
         this.list = response.data.items
         this.listLoading = false
       })

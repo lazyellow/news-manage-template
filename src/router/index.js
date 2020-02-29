@@ -51,28 +51,88 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '新闻统计', icon: 'dashboard' }
     }]
   },
 
   {
-    path: '/example',
+    path: '/news_category',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'example' },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: 'index',
+        name: 'news_category',
+        component: () => import('@/views/news_category/index'),
+        meta: { title: '新闻分类管理', icon: 'nested' }
+      }
+    ]
+  },
+
+  {
+    path: '/news_content',
+    component: Layout,
+    redirect: '/news_content/news_list',
+    name: 'news_list',
+    meta: {
+      title: '新闻内容管理',
+      icon: 'example'
+    },
+    children: [
+      {
+        path: 'news_list',
+        name: 'news_list',
+        component: () => import('@/views/news_content/news_list/index'),
+        meta: { title: '新闻列表', icon: 'table' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        path: 'news_edit',
+        name: 'news_edit',
+        component: () => import('@/views/news_content/news_edit/index'),
+        meta: { title: '新闻编辑', icon: 'form' }
+      }
+    ]
+  },
+
+  {
+    path: '/news_hot',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'news_hot',
+        component: () => import('@/views/news_hot/index'),
+        meta: { title: '热点新闻管理', icon: 'example' }
+      }
+    ]
+  },
+
+  {
+    path: '/user',
+    component: Layout,
+    redirect: '/user/user_account',
+    name: 'user_account',
+    meta: {
+      title: '用户账号管理',
+      icon: 'example'
+    },
+    children: [
+      {
+        path: 'user_add',
+        name: 'user_add',
+        component: () => import('@/views/user/user_add/index'),
+        meta: { title: '添加账号', icon: 'table' }
+      },
+      {
+        path: 'user_account',
+        name: 'user_account',
+        component: () => import('@/views/user/user_account/index'),
+        meta: { title: '账号角色管理', icon: 'table' }
+      },
+      {
+        path: 'user_info',
+        name: 'user_info',
+        component: () => import('@/views/user/user_info/index'),
+        meta: { title: '账号信息管理', icon: 'table' }
       }
     ]
   },

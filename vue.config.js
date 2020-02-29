@@ -15,6 +15,8 @@ const name = defaultSettings.title || 'vue Admin Template' // page title
 // port = 9528 npm run dev OR npm run dev --port = 9528
 const port = process.env.port || process.env.npm_config_port || 9528 // dev port
 
+
+
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
   /**
@@ -36,6 +38,15 @@ module.exports = {
       warnings: false,
       errors: true
     },
+    // proxy: {
+    //   '/api': {
+    //     target: `http://123.56.156.57`, // 这个链接是要代理到的api地址
+    //     changeOrigin: true,
+    //     pathRewrite: {
+    //       '^/api': ''
+    //     }
+    //   }
+    // }
     before: require('./mock/mock-server.js')
   },
   configureWebpack: {
