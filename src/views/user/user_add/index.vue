@@ -29,6 +29,18 @@
           ></el-input>
         </el-col>
       </el-form-item>
+      <el-form-item label="账户角色" prop="role_id">
+        <el-col :span="3">
+          <el-select v-model="ruleForm.role_id" placeholder="请选择角色">
+            <el-option
+              v-for="item in roleData"
+              :key="item.role_id"
+              :label="item.role_name"
+              :value="item.role_id"
+            ></el-option>
+          </el-select>
+        </el-col>
+      </el-form-item>
       <el-form-item label="密码" prop="pass">
         <el-col :span="3">
           <el-input
@@ -101,12 +113,27 @@ export default {
       ruleForm: {
         name: "",
         account: "",
+        role_id: "",
         pass: "",
         checkPass: "",
         sex: "男",
         phone: "",
         email: ""
       },
+      roleData: [
+        {
+          role_id: "1",
+          role_name: "管理员"
+        },
+        {
+          role_id: "2",
+          role_name: "新闻处长"
+        },
+        {
+          role_id: "3",
+          role_name: "新闻记者"
+        }
+      ],
       rules: {
         pass: [{ required: true, validator: validatePass, trigger: "blur" }],
         checkPass: [

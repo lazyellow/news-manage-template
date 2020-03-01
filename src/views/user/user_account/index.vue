@@ -13,6 +13,7 @@
           <el-table-column label="账户ID" prop="user_id"></el-table-column>
           <el-table-column label="账户名称" prop="account"></el-table-column>
           <el-table-column label="账户密码" prop="user_pwd"></el-table-column>
+          <el-table-column label="账户角色" prop="role_name"></el-table-column>
           <el-table-column label="操作" prop>
             <template slot-scope="scope">
               <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -30,7 +31,7 @@
                     <el-input v-model="edit_form.user_pwd"></el-input>
                   </el-form-item>
                   <el-form-item label="账户角色" :label-width="formLabelWidth">
-                    <el-select v-model="edit_form.role_id" placeholder="请选择活动区域">
+                    <el-select v-model="edit_form.role_id" placeholder="请选择角色">
                       <el-option
                         v-for="item in roleData"
                         :key="item.role_id"

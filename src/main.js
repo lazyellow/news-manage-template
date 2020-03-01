@@ -40,6 +40,30 @@ Vue.use(ElementUI, { locale })
 
 Vue.config.productionTip = false
 
+//添加动态路由
+// import { asyncRoutes, constantRoutes } from '@/router'
+
+// const whiteList = ["/login"];
+// router.beforeEach((to, from, next) => {
+//   if (store.getters.token) {
+//     next();
+//     const newRouter = asyncRoutes.filter(route => route.meta.roles.includes("admin"))
+//     console.log(newRouter)
+//     // constantRoutes.concat(newRouter)
+//     router.addRoutes(newRouter)
+//     // newRouter.forEach((item, index) => {
+//     //     constantRoutes.push(item)
+//     //   })
+//     console.log(constantRoutes)
+//   } else {
+//     if (to.path === "/login" || whiteList.indexOf(to.path) !== -1) {
+//       next();
+//     } else {
+//       next("/login");
+//     }
+//   }
+// })
+
 new Vue({
   el: '#app',
   router,

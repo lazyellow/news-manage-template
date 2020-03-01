@@ -19,7 +19,7 @@
           <el-table-column label="操作" prop>
             <template slot-scope="scope">
               <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-              <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+              <!-- <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button> -->
               <!-- 编辑弹窗 -->
               <el-dialog title="修改账户" :visible.sync="dialogFormVisible">
                 <el-form :model="tableData">

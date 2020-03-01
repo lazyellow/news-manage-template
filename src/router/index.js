@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from '@/store/modules/user/'
 
 Vue.use(Router)
 
@@ -27,8 +28,8 @@ import Layout from '@/layout'
 
 /**
  * constantRoutes
- * a base page that does not have permission requirements
- * all roles can be accessed
+ * 代表那些不需要动态判断权限的路由，如登录页、404、等通用页面
+ * 所有的权限都可以访问
  */
 export const constantRoutes = [
   {
@@ -101,7 +102,11 @@ export const constantRoutes = [
         path: 'index',
         name: 'news_hot',
         component: () => import('@/views/news_hot/index'),
-        meta: { title: '热点新闻管理', icon: 'example' }
+        meta: { 
+          title: '热点新闻管理',
+          icon: 'example'
+
+        }
       }
     ]
   },
@@ -223,6 +228,131 @@ export const constantRoutes = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 
+/**
+ * asyncRoutes
+ * 代表那些需求动态判断权限并通过 addRoutes 动态添加的页面
+ */
+export const asyncRoutes = [
+  {
+    path: '/news_category',
+    component: Layout,
+    meta: { roles: ['admin', 'director'] },
+    children: [
+      {
+        path: 'index',
+        name: 'news_category',
+        component: () => import('@/views/news_category/index'),
+        meta: {
+          title: '新闻分类管理',
+          icon: 'nested'
+        }
+      }
+    ]
+  },
+
+  {
+    path: '/news_content',
+    component: Layout,
+    redirect: '/news_content/news_list',
+    name: 'news_list',
+    meta: {
+      title: '新闻内容管理',
+      icon: 'example',
+      roles: ['admin']
+    },
+    children: [
+      {
+        path: 'news_list',
+        name: 'news_list',
+        component: () => import('@/views/news_content/news_list/index'),
+        meta: {
+          title: '新闻列表',
+          icon: 'table'
+        }
+      },
+      {
+        path: 'news_edit',
+        name: 'news_edit',
+        component: () => import('@/views/news_content/news_edit/index'),
+        meta: {
+          title: '新闻编辑',
+          icon: 'form'
+        }
+      }
+    ]
+  },
+
+  {
+    path: '/news_hot',
+    component: Layout,
+    meta: {
+      roles: ['admin']
+    },
+    children: [
+      {
+        path: 'index',
+        name: 'news_hot',
+        component: () => import('@/views/news_hot/index'),
+        meta: {
+          title: '热点新闻管理',
+          icon: 'example'
+        }
+      }
+    ]
+  },
+
+  {
+    path: '/user',
+    component: Layout,
+    redirect: '/user/user_account',
+    name: 'user_account',
+    meta: {
+      title: '用户账号管理',
+      icon: 'example',
+      roles: ['admin']
+    },
+    children: [
+      {
+        path: 'user_add',
+        name: 'user_add',
+        component: () => import('@/views/user/user_add/index'),
+        meta: {
+          title: '添加账号',
+          icon: 'table'
+        }
+      },
+      {
+        path: 'user_account',
+        name: 'user_account',
+        component: () => import('@/views/user/user_account/index'),
+        meta: {
+          title: '账号角色管理',
+          icon: 'table'
+        }
+      },
+      {
+        path: 'user_info',
+        name: 'user_info',
+        component: () => import('@/views/user/user_info/index'),
+        meta: {
+          title: '账号信息管理',
+          icon: 'table'
+        }
+      }
+    ]
+  },
+
+  {
+    path: '*',
+    redirect: '/404',
+    hidden: true,
+    meta: {
+      roles: ['admin']
+    }
+  }
+]
+
+// 实例化vue时只挂载通用的路由表
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
