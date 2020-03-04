@@ -69,12 +69,10 @@ export default {
           value: "公告通知"
         }
       ],
-      deleteData: [
-        {
-          news_id: "",
-          hot_status: ""
-        }
-      ],
+      deleteData: {
+        news_id: "",
+        hot_status: ""
+      },
       search: "",
       checkNews: "1111",
       dialogNewsVisible: false
@@ -95,12 +93,12 @@ export default {
 
     // 取消热点设置
     async handleDelete(index, row) {
-      console.log(row)
-      this.deleteData.news_id = row.news_id
-      this.deleteData.hot_status = 0
-      console.log(this.deleteData)
-      const result = await updateNews(this.deleteData)
-      console.log(result)
+      console.log(row);
+      this.deleteData.news_id = row.news_id;
+      this.deleteData.hot_status = 0;
+      console.log(this.deleteData);
+      const result = await updateNews(this.deleteData);
+      console.log(result);
       if (result.data.code === 200) {
         this.$router.go(0);
         this.$notify({
@@ -108,8 +106,8 @@ export default {
           type: "success"
         });
       } else {
-         this.$notify.error({
-          title: '删除失败'
+        this.$notify.error({
+          title: "删除失败"
         });
       }
     },

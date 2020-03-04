@@ -10,25 +10,18 @@
           @current-change="handleCurrentChange"
           column-key="date"
         >
-          <el-table-column label="信息ID" prop="userinfo_id"></el-table-column>
-          <el-table-column label="账号ID" prop="userinfo_id"></el-table-column>
-          <el-table-column label="姓名" prop="userinfo_name"></el-table-column>
-          <el-table-column label="性别" prop="userinfo_sex"></el-table-column>
-          <el-table-column label="联系电话" prop="userinfo_phone"></el-table-column>
-          <el-table-column label="电子邮箱" prop="userinfo_email"></el-table-column>
+          <el-table-column label="信息ID" prop="Userinfo_id"></el-table-column>
+          <el-table-column label="账号ID" prop="user_id"></el-table-column>
+          <el-table-column label="姓名" prop="UserInfo.Userinfo_name"></el-table-column>
+          <el-table-column label="性别" prop="UserInfo.Userinfo_sex"></el-table-column>
+          <el-table-column label="联系电话" prop="UserInfo.Userinfo_phone"></el-table-column>
+          <el-table-column label="电子邮箱" prop="UserInfo.Userinfo_email"></el-table-column>
           <el-table-column label="操作" prop>
             <template slot-scope="scope">
               <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-              <!-- <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button> -->
               <!-- 编辑弹窗 -->
               <el-dialog title="修改账户" :visible.sync="dialogFormVisible">
-                <el-form :model="tableData">
-                  <el-form-item label="信息ID" :label-width="formLabelWidth">
-                    <el-input v-model="edit_form.userinfo_id"></el-input>
-                  </el-form-item>
-                  <el-form-item label="账号ID" :label-width="formLabelWidth">
-                    <el-input v-model="edit_form.user_id"></el-input>
-                  </el-form-item>
+                <el-form :model="edit_form">
                   <el-form-item label="姓名" :label-width="formLabelWidth">
                     <el-input v-model="edit_form.userinfo_name"></el-input>
                   </el-form-item>
@@ -56,38 +49,22 @@
 </template>
 
 <script>
+import { getUserInfo, updateUserInfo } from "@/api/user";
 export default {
   data() {
     return {
-      tableData: [
-        {
-          userinfo_id: "0",
-          user_id: "0",
-          userinfo_name: "张三",
-          userinfo_sex: "男",
-          userinfo_phone: "10086",
-          userinfo_email: "958540498@qq.com"
-        },
-        {
-          userinfo_id: "2",
-          user_id: "2",
-          userinfo_name: "李四",
-          userinfo_sex: "女",
-          userinfo_phone: "10086",
-          userinfo_email: "958540498@qq.com"
-        },
-        {
-          userinfo_id: "3",
-          user_id: "3",
-          userinfo_name: "老吴",
-          userinfo_sex: "男",
-          userinfo_phone: "10086",
-          userinfo_email: "958540498@qq.com"
-        }
-      ],
+      tableData: [],
+      tableItem: {
+        user_id: "",
+        userinfo_id: "",
+        userinfo_name: "",
+        userinfo_sex: "",
+        userinfo_phone: "",
+        userinfo_email: ""
+      },
       edit_form: {
         userinfo_id: "",
-        user_id: "",
+        // user_id: "",
         userinfo_name: "",
         userinfo_sex: "",
         userinfo_phone: "",
@@ -98,28 +75,51 @@ export default {
       formLabelWidth: "120px"
     };
   },
+  created: function() {
+    getUserInfo().then(res => {
+      for (let item of res.data.data.rows) {
+        this.tableItem = item;
+        this.tableData.push(this.tableItem);
+      }
+    });
+  },
   methods: {
+    //编辑弹窗，数据初始化
     handleEdit(index, row) {
       console.log(index, row);
       this.dialogFormVisible = true;
-      this.edit_form.userinfo_id = row.userinfo_id;
-      this.edit_form.user_id = row.user_id;
-      this.edit_form.userinfo_name = row.userinfo_name;
-      this.edit_form.userinfo_sex = row.userinfo_sex;
-      this.edit_form.userinfo_phone = row.userinfo_phone;
-      this.edit_form.userinfo_email = row.userinfo_email;
+      // this.edit_form.user_id = row.user_id;
+      this.edit_form.userinfo_id = row.Userinfo_id;
+      this.edit_form.userinfo_name = row.UserInfo.Userinfo_name;
+      this.edit_form.userinfo_sex = row.UserInfo.Userinfo_sex;
+      this.edit_form.userinfo_phone = row.UserInfo.Userinfo_phone;
+      this.edit_form.userinfo_email = row.UserInfo.Userinfo_email;
     },
+
+    //删除操作
     handleDelete(index, row) {
       console.log(index, row);
     },
+
     handleCurrentChange(val) {
       this.currentRow = val;
     },
-    // 点击确定后，将修改的数据edit_form根据分类id更新到数据库中
-    dialogEditCommit() {
-      console.log(this.edit_form);
+
+    // 提交修改
+    async dialogEditCommit() {
       this.dialogFormVisible = false;
-      this.$message("修改成功");
+      const result = await updateUserInfo(this.edit_form);
+      if (result.data.code === 200) {
+        this.$message({
+          message: "修改成功",
+          type: "success"
+        });
+      } else if (result.data.code === 400) {
+        this.$message({
+          message: "修改失败",
+          type: "warning"
+        });
+      }
     }
   }
 };

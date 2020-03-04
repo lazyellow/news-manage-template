@@ -30,9 +30,7 @@
               <el-tag
                 :type="scope.row.hot_status === 2 ? 'warning' : 'info'"
                 disable-transitions
-                >
-                {{scope.row.hot_status === 2 ? '热点' : '非热点'}}
-              </el-tag>
+              >{{scope.row.hot_status === 2 ? '热点' : '非热点'}}</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="阅读量" prop="read_amount" width="100"></el-table-column>
@@ -129,13 +127,14 @@ export default {
       const result = await deleteNews(row.news_id);
       if (result.data.code === 200) {
         this.$router.go(0);
-        this.$notify({
-          title: "删除成功",
+        this.$message({
+          message: "删除成功",
           type: "success"
         });
       } else {
-         this.$notify.error({
-          title: '删除失败'
+        this.$message({
+          message: "删除失败",
+          type: "warning"
         });
       }
     },
@@ -143,6 +142,7 @@ export default {
     handleCurrentChange(val) {
       this.currentRow = val;
     },
+
     // 分类筛选
     filterCategory(value, row) {
       return row.Category.category_name === value;

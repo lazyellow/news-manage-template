@@ -8,13 +8,13 @@
       label-width="auto"
       class="ruleForm"
     >
-      <el-form-item label="姓名" prop="name">
+      <el-form-item label="姓名" prop="userinfo_name">
         <el-col :span="3">
           <el-input
             type="input"
             size="20px;"
             placeholder="长度为2-10个字符"
-            v-model="ruleForm.name"
+            v-model="ruleForm.userinfo_name"
             autocomplete="off"
           ></el-input>
         </el-col>
@@ -41,12 +41,12 @@
           </el-select>
         </el-col>
       </el-form-item>
-      <el-form-item label="密码" prop="pass">
+      <el-form-item label="密码" prop="user_pwd">
         <el-col :span="3">
           <el-input
             type="password"
             placeholder="密码长度为6-10个字符"
-            v-model="ruleForm.pass"
+            v-model="ruleForm.user_pwd"
             autocomplete="off"
           ></el-input>
         </el-col>
@@ -61,33 +61,34 @@
           ></el-input>
         </el-col>
       </el-form-item>
-      <el-form-item label="性别" prop="sex">
-        <el-radio v-model="ruleForm.sex" label="男"></el-radio>
-        <el-radio v-model="ruleForm.sex" label="女"></el-radio>
+      <el-form-item label="性别" prop="userinfo_sex">
+        <el-radio v-model="ruleForm.userinfo_sex" label="男"></el-radio>
+        <el-radio v-model="ruleForm.userinfo_sex" label="女"></el-radio>
       </el-form-item>
-      <el-form-item label="联系电话" prop="phone">
+      <el-form-item label="联系电话" prop="userinfo_phone">
         <el-col :span="3">
-          <el-input type="input" placeholder="请输入有效号码" v-model="ruleForm.phone" autocomplete="off"></el-input>
+          <el-input type="input" placeholder="请输入有效号码" v-model="ruleForm.userinfo_phone" autocomplete="off"></el-input>
         </el-col>
       </el-form-item>
-      <el-form-item label="电子邮箱" prop="email">
+      <el-form-item label="电子邮箱" prop="userinfo_email">
         <el-col :span="5">
           <el-input
             type="email"
             placeholder="请输入有效的邮箱地址"
-            v-model="ruleForm.email"
+            v-model="ruleForm.userinfo_email"
             autocomplete="off"
           ></el-input>
         </el-col>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')">添加</el-button>
+        <el-button type="primary" @click="submitForm()">添加</el-button>
         <el-button @click="resetForm('ruleForm')">重置</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 <script>
+import { addUser } from "@/api/user";
 export default {
   data() {
     var validatePass = (rule, value, callback) => {
@@ -102,7 +103,7 @@ export default {
     var validatePass2 = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请再次输入密码"));
-      } else if (value !== this.ruleForm.pass) {
+      } else if (value !== this.ruleForm.user_pwd) {
         callback(new Error("两次输入密码不一致!"));
       } else {
         callback();
@@ -111,14 +112,14 @@ export default {
 
     return {
       ruleForm: {
-        name: "",
+        userinfo_name: "",
         account: "",
         role_id: "",
-        pass: "",
+        user_pwd: "",
         checkPass: "",
-        sex: "男",
-        phone: "",
-        email: ""
+        userinfo_sex: "男",
+        userinfo_phone: "",
+        userinfo_email: ""
       },
       roleData: [
         {
@@ -195,21 +196,39 @@ export default {
     };
   },
   methods: {
-    submitForm(formName) {
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          //   在这里请求接口提交表单数据
-          console.log(this.ruleForm);
-          this.$message({
-            message: "添加成功!",
-            type: "success"
-          });
-        } else {
-          console.log("error submit!!");
-          return false;
-        }
-      });
+    // 添加
+    async submitForm() {
+      this.$delete(this.ruleForm,"checkPass")
+      const result = await addUser(this.ruleForm);
+      console.log(result);
+      if (result.data.code === 200) {
+        this.$message({
+          message: "添加成功!",
+          type: "success"
+        });
+      } else if (result.data.code === 400) {
+        console.log(result)
+        this.$message({
+          message: "添加成功!",
+          type: "success"
+        });
+      }
+      // this.$refs[form].validate(valid => {
+      //   if (valid) {
+      //     //   在这里请求接口提交表单数据
+      //     console.log(this.ruleForm);
+      //     this.$message({
+      //       message: "添加成功!",
+      //       type: "success"
+      //     });
+      //   } else {
+      //     console.log("error submit!!");
+      //     return false;
+      //   }
+      // });
     },
+
+    // 重置
     resetForm(formName) {
       this.$refs[formName].resetFields();
     }

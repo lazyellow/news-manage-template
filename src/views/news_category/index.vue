@@ -70,43 +70,6 @@ import { getCategory, addCategory, updateCategory, deleteCategory } from "@/api/
 export default {
   data() {
     return {
-      tableData: [
-        {
-          category_id: "0",
-          category_name: "综合新闻",
-          category_desc: "放置综合类型的新闻"
-        },
-        {
-          category_id: "1",
-          category_name: "公告通知",
-          category_desc: "放置公告通知"
-        },
-        {
-          category_id: "2",
-          category_name: "缤纷校园",
-          category_desc: "放置校园活动相关的新闻"
-        },
-        {
-          category_id: "3",
-          category_name: "学术成果",
-          category_desc: "放置学术成果相关的新闻"
-        },
-        {
-          category_id: "4",
-          category_name: "学术动态",
-          category_desc: "放置学术动态相关的新闻"
-        },
-        {
-          category_id: "5",
-          category_name: "学术竞赛",
-          category_desc: "放置学术竞赛相关的新闻"
-        },
-        {
-          category_id: "6",
-          category_name: "校园人物",
-          category_desc: "放置校园人物相关的新闻"
-        }
-      ],
       add_form: {
         // id: "",
         name: "",
@@ -127,6 +90,7 @@ export default {
   created: function() {
     //调用api中获取分类的接口，把数据渲染到页面上
     getCategory().then(res => {
+      console.log(res)
       this.CategoryList = res.data.data;
     });
   },
