@@ -21,7 +21,6 @@
         </el-select>
       </el-form-item>
       <el-form-item label="新闻封面">
-        <el-image style="width: 150px; height: 150px" :src="form.news_source" fit="cover"></el-image>
         <el-upload
           action
           accept="image/jpeg, image/gif, image/png"
@@ -81,10 +80,9 @@
   </div>
 </template>
 
-
 <script>
 import Tinymce from "@/components/Tinymce";
-import { updateNews, uploadImg } from "@/api/newslist";
+import { updateNews, uploadImg, addNews } from "@/api/newslist";
 
 export default {
   name: "TinymceDemo",
@@ -129,7 +127,6 @@ export default {
         }
       ],
       form: {
-        news_id: "",
         news_title: "",
         news_subtitle: "",
         category_id: "",
@@ -137,27 +134,18 @@ export default {
         news_reporter: "",
         news_editor: "",
         news_reviewer: "",
-        hot_status: "",
+        hot_status: "1",
         news_time: "",
         news_content: ""
       },
-      initHot: "",
-      setHot: "",
+      setHot: "false",
       fileImg: {},
+      data: "",
       dialogNewsVisible: false
     };
   },
-  created: function() {
-    this.form = this.$route.params.newsMessage;
-    this.initHot = this.$route.params.newsMessage.hot_status;
-    if (this.form.hot_status === 2) {
-      this.setHot = true;
-    } else {
-      this.setHot = false;
-    }
-  },
   methods: {
-    // 修改封面图片
+    // 选取封面图片
     onUploadChange(file) {
       this.fileImg = file.raw;
       const isIMAGE =
@@ -185,20 +173,17 @@ export default {
 
     // 提交
     async onSubmit() {
-      console.log(this.fileImg.length);
       const imgUrl = await this.submitUpload(this.fileImg);
-      if (imgUrl.data.code === 200) {
-        this.form.news_source = imgUrl.data.success;
-      }
+      this.form.news_source = imgUrl.data.success;
       if (this.setHot === true) {
         this.form.hot_status = 2;
-      } else if (this.setHot === false && this.initHot === 2) {
-        this.form.hot_status = 0;
+      } else if (this.setHot === false) {
+        this.form.hot_status = 1;
       }
-      const result = await updateNews(this.form);
+      const result = await addNews(this.form);
       if (result.data.code === 200) {
         this.$message({
-          message: "修改成功！",
+          message: "发布成功！",
           type: "success"
         });
         this.$router.push({
@@ -211,12 +196,14 @@ export default {
     onClear() {
       (this.form.news_title = ""),
         (this.form.news_subtitle = ""),
-        (this.form.category = ""),
+        (this.form.category_id = ""),
         (this.form.news_reporter = ""),
         (this.form.news_editor = ""),
         (this.form.news_reviewer = ""),
-        (this.form.hotnews = false),
-        (this.form.news_content = "");
+        (this.form.hot_status = 1),
+        (this.form.news_time = ""),
+        (this.form.news_content = ""),
+        (this.setHot = "false");
       this.$message({
         message: "已清空!",
         type: "success"

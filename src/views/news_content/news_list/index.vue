@@ -9,41 +9,45 @@
     <el-row class="table" type="flex" justify="center">
       <el-col :span="23">
         <el-table
-          :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+          :data="newsList.filter(data => !search || data.news_title.toLowerCase().includes(search.toLowerCase()))"
           border
           highlight-current-row
           @current-change="handleCurrentChange"
           column-key="date"
         >
-          <el-table-column label="新闻ID" prop="date"></el-table-column>
-          <el-table-column label="新闻标题" prop="name"></el-table-column>
+          <el-table-column label="新闻ID" prop="news_id" width="80"></el-table-column>
+          <el-table-column label="新闻标题" prop="news_title"></el-table-column>
           <el-table-column
             label="新闻类型"
-            prop="category"
-            :filters="category"
+            prop="Category.category_name"
+            :filters="categoryList"
             :filter-method="filterCategory"
             filter-placement="bottom-end"
+            width="150"
           ></el-table-column>
-
-          <el-table-column
-            label="热点新闻"
-            prop="hotnews"
-            :filters="hot"
-            :filter-method="filterHotnews"
-            filter-placement="bottom-end"
-          >
+          <el-table-column label="热点新闻" prop="hot_status" width="100">
             <template slot-scope="scope">
               <el-tag
-                :type="scope.row.hotnews === '是' ? 'warning' : 'info'"
+                :type="scope.row.hot_status === 2 ? 'warning' : 'info'"
                 disable-transitions
-              >{{scope.row.hotnews}}</el-tag>
+                >
+                {{scope.row.hot_status === 2 ? '热点' : '非热点'}}
+              </el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="操作">
+          <el-table-column label="阅读量" prop="read_amount" width="100"></el-table-column>
+          <el-table-column label="新闻记者" prop="news_reporter" width="150"></el-table-column>
+          <el-table-column label="编辑人员" prop="news_editor" width="150"></el-table-column>
+          <el-table-column label="审核人员" prop="news_reviewer" width="150"></el-table-column>
+          <el-table-column label="操作" width="300">
             <template slot-scope="scope">
-              <el-button size="mini" @click="handleDelete(scope.$index, scope.row)">查看</el-button>
+              <el-button size="mini" @click="handleLook(scope.$index, scope.row)">查看</el-button>
               <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
               <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+              <!-- 查看弹窗 -->
+              <el-dialog :visible.sync="dialogNewsVisible">
+                <div v-html="checkNews" />
+              </el-dialog>
             </template>
           </el-table-column>
         </el-table>
@@ -53,180 +57,14 @@
 </template>
 
 <script>
+import { getCategory } from "@/api/category";
+import { getNews, deleteNews } from "@/api/newslist";
+
 export default {
   data() {
     return {
-      tableData: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          hotnews: "是",
-          category: "校园人物"
-        },
-        {
-          date: "2016-05-04",
-          name: "陈小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-          hotnews: "是",
-          category: "学术动态"
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-          hotnews: "否",
-          category: "综合新闻"
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄",
-          hotnews: "否",
-          category: "综合新闻"
-        },
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          hotnews: "是",
-          category: "缤纷校园"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-          hotnews: "否",
-          category: "公告通知"
-        },
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          hotnews: "是",
-          category: "校园人物"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-          hotnews: "是",
-          category: "学术动态"
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-          hotnews: "否",
-          category: "综合新闻"
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄",
-          hotnews: "否",
-          category: "综合新闻"
-        },
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          hotnews: "是",
-          category: "缤纷校园"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-          hotnews: "是",
-          category: "缤纷校园"
-        },
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          hotnews: "是",
-          category: "校园人物"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-          hotnews: "是",
-          category: "学术动态"
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-          hotnews: "否",
-          category: "综合新闻"
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄",
-          hotnews: "否",
-          category: "综合新闻"
-        },
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          hotnews: "是",
-          category: "缤纷校园"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-          hotnews: "否",
-          category: "公告通知"
-        },
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          hotnews: "是",
-          category: "校园人物"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-          hotnews: "是",
-          category: "学术动态"
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-          hotnews: "否",
-          category: "综合新闻"
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄",
-          hotnews: "否",
-          category: "综合新闻"
-        },
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-          hotnews: "是",
-          category: "缤纷校园"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-          hotnews: "是",
-          category: "缤纷校园"
-        }
-      ],
-      category: [
+      newsList: [],
+      categoryList: [
         {
           text: "综合新闻",
           value: "综合新闻"
@@ -248,6 +86,8 @@ export default {
           value: "公告通知"
         }
       ],
+      CategoryList: [],
+      test: [],
       hot: [
         {
           text: "是",
@@ -258,27 +98,62 @@ export default {
           value: "否"
         }
       ],
-      search: ""
-    }
+      search: "",
+      dialogNewsVisible: false,
+      checkNews: ""
+    };
+  },
+  created: function() {
+    //调用api中获取新闻列表的接口
+    getNews().then(res => {
+      this.newsList = res.data.data;
+    });
   },
   methods: {
+    // 查看操作
+    handleLook(index, row) {
+      this.dialogNewsVisible = true;
+      this.checkNews = row.news_content;
+    },
+
+    // 编辑操作
     handleEdit(index, row) {
-      console.log(index, row)
+      this.$router.push({
+        name: "news_edit",
+        params: { newsMessage: row }
+      });
     },
-    handleDelete(index, row) {
-      console.log(index, row)
+
+    // 删除操作
+    async handleDelete(index, row) {
+      const result = await deleteNews(row.news_id);
+      if (result.data.code === 200) {
+        this.$router.go(0);
+        this.$notify({
+          title: "删除成功",
+          type: "success"
+        });
+      } else {
+         this.$notify.error({
+          title: '删除失败'
+        });
+      }
     },
+
     handleCurrentChange(val) {
-      this.currentRow = val
+      this.currentRow = val;
     },
+    // 分类筛选
     filterCategory(value, row) {
-      return row.category === value
+      return row.Category.category_name === value;
     },
+
+    // 热点筛选
     filterHotnews(value, row) {
-      return row.hotnews === value
+      return row.hotnews === value;
     }
   }
-}
+};
 </script>
 <style>
 .search {

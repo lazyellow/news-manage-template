@@ -37,7 +37,7 @@ module.exports = {
     overlay: {
       warnings: false,
       errors: true
-    },
+    }
     // proxy: {
     //   '/api': {
     //     target: `http://123.56.156.57`, // 这个链接是要代理到的api地址
@@ -47,7 +47,7 @@ module.exports = {
     //     }
     //   }
     // }
-    before: require('./mock/mock-server.js')
+    // before: require('./mock/mock-server.js')
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that

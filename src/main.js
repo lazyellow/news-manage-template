@@ -30,8 +30,10 @@ import '@/permission' // permission control
 
 // axios
 import axios from 'axios'
+import { getToken } from '@/utils/auth'
 Vue.prototype.$http = axios
 Vue.config.productionTip = false
+axios.defaults.headers.common['authorizatior'] = getToken()
 
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })

@@ -3,10 +3,10 @@
     <el-button class="add" icon="el-icon-plus" @click="dialogAddVisible = true">添加分类</el-button>
     <!-- 编辑弹窗 -->
     <el-dialog title="新闻类型" :visible.sync="dialogAddVisible">
-      <el-form :model="tableData">
-        <el-form-item label="类型ID" :label-width="formLabelWidth">
+      <el-form :model="add_form">
+        <!-- <el-form-item label="类型ID" :label-width="formLabelWidth">
           <el-input v-model="add_form.id"></el-input>
-        </el-form-item>
+        </el-form-item>-->
         <el-form-item label="类型名称" :label-width="formLabelWidth">
           <el-input v-model="add_form.name"></el-input>
         </el-form-item>
@@ -24,7 +24,7 @@
     <el-row class="table" type="flex" justify="center">
       <el-col :span="23">
         <el-table
-          :data="tableData"
+          :data="CategoryList"
           border
           highlight-current-row
           @current-change="handleCurrentChange"
@@ -32,17 +32,17 @@
         >
           <el-table-column label="类型ID" prop="category_id"></el-table-column>
           <el-table-column label="类型名称" prop="category_name"></el-table-column>
-          <el-table-column label="类型描述" prop="category_desc"></el-table-column>
+          <el-table-column label="类型描述" prop="Category_desc"></el-table-column>
           <el-table-column label="操作" prop>
             <template slot-scope="scope">
               <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
               <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
               <!-- 编辑弹窗 -->
               <el-dialog title="新闻类型" :visible.sync="dialogFormVisible">
-                <el-form :model="tableData">
-                  <el-form-item label="类型ID" :label-width="formLabelWidth">
+                <el-form :model="edit_form">
+                  <!-- <el-form-item label="类型ID" :label-width="formLabelWidth">
                     <el-input v-model="edit_form.id"></el-input>
-                  </el-form-item>
+                  </el-form-item>-->
                   <el-form-item label="类型名称" :label-width="formLabelWidth">
                     <el-input v-model="edit_form.name"></el-input>
                   </el-form-item>
@@ -64,6 +64,9 @@
 </template>
 
 <script>
+import axios from "axios";
+import { getCategory, addCategory, updateCategory, deleteCategory } from "@/api/category";
+
 export default {
   data() {
     return {
@@ -105,7 +108,7 @@ export default {
         }
       ],
       add_form: {
-        id: "",
+        // id: "",
         name: "",
         desc: ""
       },
@@ -114,40 +117,73 @@ export default {
         name: "",
         desc: ""
       },
+      CategoryList: [],
       search: "",
       dialogAddVisible: false,
       dialogFormVisible: false,
       formLabelWidth: "120px"
     };
   },
+  created: function() {
+    //调用api中获取分类的接口，把数据渲染到页面上
+    getCategory().then(res => {
+      this.CategoryList = res.data.data;
+    });
+  },
   methods: {
+    // 编辑
     handleEdit(index, row) {
-      console.log(index, row);
       this.dialogFormVisible = true;
       this.edit_form.id = row.category_id;
       this.edit_form.name = row.category_name;
-      this.edit_form.desc = row.category_desc;
-      console.log(this.edit_form.id);
-      console.log(this.edit_form.name);
-      console.log(this.edit_form.desc);
+      this.edit_form.desc = row.Category_desc;
     },
-    handleDelete(index, row) {
-      console.log(index, row);
+
+    // 删除
+    async handleDelete(index, row) {
+      const result = await deleteCategory(row.category_id);
+      if (result.data.code === 200) {
+        this.$router.go(0);
+        this.$message({
+          message: "删除成功!",
+          type: "success"
+        });
+      } else {
+        this.$message({ message: "删除失败!" });
+      }
     },
     handleCurrentChange(val) {
       this.currentRow = val;
     },
-    // 点击确定后，将新增的数据edit_form根据分类id更新到数据库中
-    dialogAddCommit() {
-      console.log(this.add_form);
+
+    //  添加分类，将新增的数据edit_form根据分类id更新到数据库中
+    async dialogAddCommit() {
       this.dialogAddVisible = false;
-      this.$message("添加成功");
+      const result = await addCategory(this.add_form);
+      if (result.data.code === 200) {
+        this.$router.go(0);
+        this.$message({
+          message: "添加成功!",
+          type: "success"
+        });
+      } else {
+        this.$message({ message: "添加失败!" });
+      }
     },
-    // 点击确定后，将修改的数据edit_form根据分类id更新到数据库中
-    dialogEditCommit() {
-      console.log(this.edit_form);
+
+    // 编辑提交
+    async dialogEditCommit() {
       this.dialogFormVisible = false;
-      this.$message("修改成功");
+      const result = await updateCategory(this.edit_form);
+       if (result.data.code === 200) {
+        this.$router.go(0);
+        this.$message({
+          message: "修改成功!",
+          type: "success"
+        });
+      } else {
+        this.$message({ message: "修改失败!" });
+      }
     }
   }
 };

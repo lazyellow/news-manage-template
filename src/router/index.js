@@ -33,6 +33,18 @@ import Layout from '@/layout'
  */
 export const constantRoutes = [
   {
+    path: '/',
+    component: Layout,
+    redirect: '/login',
+    children: [{
+      path: 'dashboard',
+      name: 'Dashboard',
+      component: () => import('@/views/dashboard/index'),
+      meta: { title: '新闻统计', icon: 'dashboard' }
+    }]
+  },
+
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true
@@ -42,18 +54,6 @@ export const constantRoutes = [
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true
-  },
-
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: '新闻统计', icon: 'dashboard' }
-    }]
   },
 
   {
@@ -86,10 +86,16 @@ export const constantRoutes = [
         meta: { title: '新闻列表', icon: 'table' }
       },
       {
-        path: 'news_edit',
+        path: 'news_add',
+        name: 'news_add',
+        component: () => import('@/views/news_content/news_add/index'),
+        meta: { title: '发布新闻', icon: 'form' }
+      },
+      {
+        path: 'news_edit/:newsMessage',
         name: 'news_edit',
-        component: () => import('@/views/news_content/news_edit/index'),
-        meta: { title: '新闻编辑', icon: 'form' }
+        component: () => import('@/views/news_content/news_edit/index')
+        // meta: { title: '新闻编辑', icon: 'form' }
       }
     ]
   },
@@ -102,7 +108,7 @@ export const constantRoutes = [
         path: 'index',
         name: 'news_hot',
         component: () => import('@/views/news_hot/index'),
-        meta: { 
+        meta: {
           title: '热点新闻管理',
           icon: 'example'
 

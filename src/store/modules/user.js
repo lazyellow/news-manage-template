@@ -1,6 +1,7 @@
 import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
+import axios from "axios";
 
 const getDefaultState = () => {
   return {
@@ -33,23 +34,19 @@ const mutations = {
 
 const actions = {
   // user login
-  login({ commit }, userInfo) {
-    const { username, password } = userInfo
-    commit('SET_NAME',username)   //存储用户名到vuex
-    commit('SET_TOKEN',username)  //存储token到vuex
-    commit('SET_ROLES',username)  //存储该用户的角色权限到vuex
-    setToken(username)            //将token存储到浏览器的cookie中
-    // setToken(userinfo.username)
-    // return new Promise((resolve, reject) => {
-    //   login({ username: username.trim(), password: password }).then(response => {
-    //     const { data } = response
-    //     commit('SET_TOKEN', data.token) //将token存储在vuex中
-    //     setToken(data.token)
-    //     resolve()
-    //   }).catch(error => {
-    //     reject(error)
-    //   })
-    // })
+  async tologin({ commit }, userInfo) {
+    const { account, user_pwd } = userInfo
+    commit('SET_NAME', account)   //存储用户名到vuex
+    commit('SET_ROLES', account)  //存储该用户的角色权限到vuex
+    
+    //将登陆信息发送到登陆接口验证
+    const result = await login(account, user_pwd) 
+    console.log(result)
+    if(result.data.code === 200){  //如果登陆成功，则将返回的token存储到cookie中
+      setToken(result.data.data.toKen)  //将token存储到cookie中
+      commit('SET_TOKEN', result.data.data.toKen)  //存储token到vuex
+    }
+    return result
   },
 
   // get user info
@@ -131,4 +128,3 @@ export default {
   mutations,
   actions
 }
-

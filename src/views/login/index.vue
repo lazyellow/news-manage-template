@@ -12,38 +12,38 @@
         <h3 class="title">Login Form</h3>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="account">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
         <el-input
-          ref="username"
-          v-model="loginForm.username"
+          ref="account"
+          v-model="loginForm.account"
           placeholder="Username"
-          name="username"
+          name="account"
           type="text"
           tabindex="1"
           auto-complete="on"
         />
       </el-form-item>
 
-      <el-form-item prop="password">
+      <el-form-item prop="user_pwd">
         <span class="svg-container">
           <svg-icon icon-class="password" />
         </span>
         <el-input
           :key="passwordType"
-          ref="password"
-          v-model="loginForm.password"
+          ref="user_pwd"
+          v-model="loginForm.user_pwd"
           :type="passwordType"
           placeholder="Password"
-          name="password"
+          name="user_pwd"
           tabindex="2"
           auto-complete="on"
           @keyup.enter.native="handleLogin"
         />
         <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+          <svg-icon :icon-class="passwordType === 'user_pwd' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
 
@@ -64,7 +64,9 @@
 
 <script>
 import { validUsername } from "@/utils/validate";
-import { setToken } from "@/utils/auth";
+import { setToken, getToken } from "@/utils/auth";
+import store from "@/store";
+// import axios from "axios";
 
 export default {
   name: "Login",
@@ -77,22 +79,22 @@ export default {
       }
     };
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error("The password can not be less than 6 digits"));
+      if (value.length < 5) {
+        callback(new Error("The password can not be less than 5 digits"));
       } else {
         callback();
       }
     };
     return {
       loginForm: {
-        username: "admin",
-        password: "111111"
+        account: "admin",
+        user_pwd: "admin"
       },
       loginRules: {
-        username: [
+        account: [
           { required: true, trigger: "blur", validator: validateUsername }
         ],
-        password: [
+        user_pwd: [
           { required: true, trigger: "blur", validator: validatePassword }
         ]
       },
@@ -117,42 +119,26 @@ export default {
         this.passwordType = "password";
       }
       this.$nextTick(() => {
-        this.$refs.password.focus();
+        this.$refs.user_pwd.focus();
       });
     },
     // 点击登陆
     handleLogin() {
-      // this.$refs.loginForm.validate(valid => {
-      //   if (valid) {
-      //     this.loading = true
-      //     this.$store.dispatch('user/login', this.loginForm).then(() => {   //请求调用了api中user.js里的login方法将数据存在在vuex中
-      //       this.$router.push({ path: this.redirect || '/' })   //重定向到首页
-      //       this.loading = false
-      //     }).catch(() => {
-      //       this.loading = false
-      //     })
-      //   } else {
-      //     console.log('error submit!!')
-      //     return false
-      //   }
-      // })
-
-
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {   //请求调用了api中user.js里的login方法将数据存在在vuex中
-            this.$router.push({ path: this.redirect || '/' })   //重定向到首页
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
-        } else {
-          console.log('error submit!!')
-          return false
+      this.$store.dispatch("user/tologin", this.loginForm).then(res => {
+        if (res.data.code == 200) {
+          this.$router.push({ path: this.redirect || "/dashboard" }); //重定向到首页
+          this.loading = false;
+          this.$message({
+            message: "登陆成功!",
+            type: "success"
+          });
+        } else if (res.data.code == 400) {
+          this.$router.push({ path: this.redirect || "/" }); //重定向到login，重新登陆
+          this.$message({
+            message: "用户名或密码错误!"
+          });
         }
-      })
-
+      });
     }
   }
 };
