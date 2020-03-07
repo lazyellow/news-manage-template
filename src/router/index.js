@@ -40,7 +40,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: '新闻统计', icon: 'dashboard' }
+      meta: { title: 'Dashboard', icon: 'dashboard' }
     }]
   },
 
@@ -54,6 +54,32 @@ export const constantRoutes = [
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true
+  },
+
+  {
+    path: '/news_count',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'news_count',
+        component: () => import('@/views/news_count/index'),
+        meta: { title: '新闻统计', icon: 'dashboard' }
+      }
+    ]
+  },
+
+  {
+    path: '/slider',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'slider',
+        component: () => import('@/views/slider/index'),
+        meta: { title: '轮播图管理', icon: 'nested' }
+      }
+    ]
   },
 
   {
@@ -95,7 +121,6 @@ export const constantRoutes = [
         path: 'news_edit/:newsMessage',
         name: 'news_edit',
         component: () => import('@/views/news_content/news_edit/index')
-        // meta: { title: '新闻编辑', icon: 'form' }
       }
     ]
   },
@@ -134,7 +159,7 @@ export const constantRoutes = [
         meta: { title: '添加账号', icon: 'table' }
       },
       {
-        path: 'user_account',
+        path: 'user_account/:user_id',
         name: 'user_account',
         component: () => import('@/views/user/user_account/index'),
         meta: { title: '账号角色管理', icon: 'table' }

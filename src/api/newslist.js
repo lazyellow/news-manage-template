@@ -13,6 +13,13 @@ export async function getHotNews() {
     return result
 }
 
+//获取各分类新闻(根据分类ID查)
+export function getCategoryNews(cid) {
+    const result = axios.get("http://47.101.150.127:3030/news/getNewsByType?category_id="+cid)
+    return result
+}
+
+
 // 搜索新闻
 export async function searchNews(nid) {
     const result = await axios.get("http://47.101.150.127:3030/news/getNewsDetail?nid=" + nid)

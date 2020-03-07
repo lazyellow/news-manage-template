@@ -1,47 +1,51 @@
 <template>
   <div>
+    <!-- 搜索框 -->
+    <el-row class="search" type="flex" justify="left">
+      <el-col :span="19"></el-col>
+      <el-col :span="4">
+        <el-input v-model="search" size="mini" placeholder="根据账号名称搜索" />
+      </el-col>
+    </el-row>
     <!-- 表格 -->
     <el-row class="table" type="flex" justify="center">
       <el-col :span="23">
         <el-table
-          :data="tableData"
+          :data="tableData.filter(data => !search || data.account.toLowerCase().includes(search.toLowerCase()))"
           border
           highlight-current-row
           @current-change="handleCurrentChange"
           column-key="date"
         >
-          <el-table-column label="账户ID" prop="user_id"></el-table-column>
-          <el-table-column label="账户名称" prop="account"></el-table-column>
-          <el-table-column label="账户密码" prop="user_pwd"></el-table-column>
+          <el-table-column label="账号ID" prop="user_id" width="150"></el-table-column>
+          <el-table-column label="账号名称" prop="account"></el-table-column>
+          <el-table-column label="账号密码" prop="user_pwd"></el-table-column>
           <el-table-column
-            label="账户角色"
+            label="账号角色"
             prop="role_name"
-            :filters="roleData"
+            :filters="roleFilter"
             :filter-method="filterRole"
             filter-placement="bottom-end"
           ></el-table-column>
           <el-table-column label="操作" prop>
             <template slot-scope="scope">
-              <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+              <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
               <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
               <!-- 编辑弹窗 -->
-              <el-dialog title="修改账户" :visible.sync="dialogFormVisible">
+              <el-dialog title="修改账号" :visible.sync="dialogFormVisible">
                 <el-form :model="edit_form">
-                  <el-form-item label="账户名称" :label-width="formLabelWidth">
+                  <el-form-item label="账号名称" :label-width="formLabelWidth">
                     <el-input v-model="edit_form.account"></el-input>
                   </el-form-item>
-                  <el-form-item label="账户密码" :label-width="formLabelWidth">
+                  <el-form-item label="账号密码" :label-width="formLabelWidth">
                     <el-input v-model="edit_form.user_pwd"></el-input>
                   </el-form-item>
-                  <el-form-item label="账户角色" :label-width="formLabelWidth">
-                    <el-select v-model="edit_form.role_id" placeholder="请选择角色">
-                      <el-option
-                        v-for="item in roleDataDialog"
-                        :key="item.role_id"
-                        :label="item.text"
-                        :value="item.value"
-                      ></el-option>
-                    </el-select>
+                  <el-form-item label="账号角色" :label-width="formLabelWidth">
+                    <el-radio-group v-model="edit_form.role_id">
+                      <el-radio label="3">新闻记者</el-radio>
+                      <el-radio label="2">新闻处长</el-radio>
+                      <el-radio label="1">管理员</el-radio>
+                    </el-radio-group>
                   </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
@@ -70,7 +74,7 @@ export default {
         role_id: "",
         role_name: ""
       },
-      roleData: [
+      roleFilter: [
         {
           text: "管理员",
           value: "管理员"
@@ -84,25 +88,10 @@ export default {
           value: "新闻记者"
         }
       ],
-      roleDataDialog: [
-        {
-          text: "管理员",
-          value: "1"
-        },
-        {
-          text: "新闻处长",
-          value: "2"
-        },
-        {
-          text: "新闻记者",
-          value: "3"
-        }
-      ],
       edit_form: {
         user_id: "",
         account: "",
         user_pwd: "",
-        role_name: "",
         role_id: ""
       },
       search: "",
@@ -112,13 +101,24 @@ export default {
     };
   },
   created: function() {
+    // 表格数据初始化
     getUserRole().then(res => {
       for (let item of res.data.data.rows) {
         this.tableItem = item;
         this.tableItem.role_name = item.Role.role_name;
         this.tableData.push(this.tableItem);
       }
+      if (typeof this.$route.params.user_id === "number") {
+        //有带参数跳转
+        for (let item of this.tableData) {
+          if (item.user_id === this.$route.params.user_id) {
+            this.search = item.account;
+          }
+        }
+      }
     });
+
+    // console.log(this.tableData)
   },
   methods: {
     // 编辑弹窗，数据初始化
@@ -128,7 +128,6 @@ export default {
       this.edit_form.account = row.account;
       this.edit_form.user_pwd = row.user_pwd;
       this.edit_form.role_id = row.role_id;
-      this.edit_form.role_name = row.role_name;
     },
 
     //删除操作
@@ -140,7 +139,14 @@ export default {
           message: "删除成功",
           type: "success"
         });
-        this.$router.go(0);
+        getUserRole().then(res => {
+          this.tableData.length = 0;
+          for (let item of res.data.data.rows) {
+            this.tableItem = item;
+            this.tableItem.role_name = item.Role.role_name;
+            this.tableData.push(this.tableItem);
+          }
+        });
       } else {
         this.$message({
           message: "删除失败",
@@ -155,7 +161,7 @@ export default {
 
     // 角色修改提交
     async dialogEditCommit() {
-      this.$delete(this.edit_form, "role_name");
+      // this.$delete(this.edit_form, "role_name");
       const result = await updateUserRole(this.edit_form);
       console.log(result);
       this.dialogFormVisible = false;
@@ -164,7 +170,15 @@ export default {
           message: "修改成功",
           type: "success"
         });
-      } else if (result.data.code === 400) {
+        getUserRole().then(res => {
+          this.tableData.length = 0;
+          for (let item of res.data.data.rows) {
+            this.tableItem = item;
+            this.tableItem.role_name = item.Role.role_name;
+            this.tableData.push(this.tableItem);
+          }
+        });
+      } else {
         this.$message({
           message: "修改失败",
           type: "warning"
@@ -180,6 +194,9 @@ export default {
 };
 </script>
 <style>
+.search {
+  margin: 20px 0px;
+}
 .add {
   margin-top: 20px;
   margin-left: 35px;

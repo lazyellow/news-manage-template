@@ -206,26 +206,17 @@ export default {
           message: "添加成功!",
           type: "success"
         });
-      } else if (result.data.code === 400) {
+        // 跳转到用户角色列表
+        this.$router.push({
+          name: "user_account"
+        });
+      } else {
         console.log(result)
         this.$message({
-          message: "添加成功!",
-          type: "success"
+          message: "添加失败!",
+          type: "warning"
         });
       }
-      // this.$refs[form].validate(valid => {
-      //   if (valid) {
-      //     //   在这里请求接口提交表单数据
-      //     console.log(this.ruleForm);
-      //     this.$message({
-      //       message: "添加成功!",
-      //       type: "success"
-      //     });
-      //   } else {
-      //     console.log("error submit!!");
-      //     return false;
-      //   }
-      // });
     },
 
     // 重置

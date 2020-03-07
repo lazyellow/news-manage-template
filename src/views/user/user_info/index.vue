@@ -1,10 +1,17 @@
 <template>
   <div>
+     <!-- 搜索框 -->
+    <el-row class="search" type="flex" justify="left">
+      <el-col :span="19"></el-col>
+      <el-col :span="4">
+        <el-input v-model="search" size="mini" placeholder="根据姓名搜索" />
+      </el-col>
+    </el-row>
     <!-- 表格 -->
     <el-row class="table" type="flex" justify="center">
       <el-col :span="23">
         <el-table
-          :data="tableData"
+          :data="tableData.filter(data => !search || data.UserInfo.Userinfo_name.toLowerCase().includes(search.toLowerCase()))"
           border
           highlight-current-row
           @current-change="handleCurrentChange"
@@ -18,7 +25,8 @@
           <el-table-column label="电子邮箱" prop="UserInfo.Userinfo_email"></el-table-column>
           <el-table-column label="操作" prop>
             <template slot-scope="scope">
-              <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+              <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
+              <el-button size="mini" type="success" @click="handleRole(scope.$index, scope.row)">查看角色</el-button>
               <!-- 编辑弹窗 -->
               <el-dialog title="修改账户" :visible.sync="dialogFormVisible">
                 <el-form :model="edit_form">
@@ -26,7 +34,8 @@
                     <el-input v-model="edit_form.userinfo_name"></el-input>
                   </el-form-item>
                   <el-form-item label="性别" :label-width="formLabelWidth">
-                    <el-input v-model="edit_form.userinfo_sex"></el-input>
+                    <el-radio v-model="edit_form.userinfo_sex" label="男"></el-radio>
+                    <el-radio v-model="edit_form.userinfo_sex" label="女"></el-radio>
                   </el-form-item>
                   <el-form-item label="联系电话" :label-width="formLabelWidth">
                     <el-input v-model="edit_form.userinfo_phone"></el-input>
@@ -64,7 +73,6 @@ export default {
       },
       edit_form: {
         userinfo_id: "",
-        // user_id: "",
         userinfo_name: "",
         userinfo_sex: "",
         userinfo_phone: "",
@@ -86,7 +94,6 @@ export default {
   methods: {
     //编辑弹窗，数据初始化
     handleEdit(index, row) {
-      console.log(index, row);
       this.dialogFormVisible = true;
       // this.edit_form.user_id = row.user_id;
       this.edit_form.userinfo_id = row.Userinfo_id;
@@ -96,9 +103,12 @@ export default {
       this.edit_form.userinfo_email = row.UserInfo.Userinfo_email;
     },
 
-    //删除操作
-    handleDelete(index, row) {
-      console.log(index, row);
+    //查看角色操作
+    handleRole(index, row) {
+      this.$router.push({
+        name: "user_account",
+        params: { user_id: row.user_id }
+      });
     },
 
     handleCurrentChange(val) {
@@ -114,7 +124,15 @@ export default {
           message: "修改成功",
           type: "success"
         });
-      } else if (result.data.code === 400) {
+        // this.$router.go(0)
+        getUserInfo().then(res => {
+          this.tableData.length = 0;
+          for (let item of res.data.data.rows) {
+            this.tableItem = item;
+            this.tableData.push(this.tableItem);
+          }
+        });
+      } else {
         this.$message({
           message: "修改失败",
           type: "warning"

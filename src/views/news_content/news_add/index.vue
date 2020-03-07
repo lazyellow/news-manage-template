@@ -14,7 +14,7 @@
       <el-form-item label="新闻分类">
         <el-select v-model="form.category_id" placeholder="请选择新闻类型">
           <el-option
-            v-for="item in CategoryList"
+            v-for="item in categoryList"
             :label="item.category_name"
             :value="item.category_id"
           />
@@ -75,13 +75,25 @@
     </el-form>
     <!-- 查看弹窗 -->
     <el-dialog :visible.sync="dialogNewsVisible">
-      <div v-html="form.news_content" />
+      <el-dialog :visible.sync="dialogNewsVisible">
+        <div class="news-title">{{form.news_title}}</div>
+        <div class="news-message">
+          <span>新闻记者：{{form.news_reporter}}</span>
+          <span>编辑人员：{{form.news_editor}}</span>
+          <span>审核人员：{{form.news_reviewer}}</span>
+          <span>发布时间：{{form.news_time}}</span>
+          <span>修改时间：</span>
+          <span>阅读量：</span>
+        </div>
+        <div v-html="form.news_content" />
+      </el-dialog>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import Tinymce from "@/components/Tinymce";
+import { getCategory } from "@/api/category";
 import { updateNews, uploadImg, addNews } from "@/api/newslist";
 
 export default {
@@ -89,43 +101,7 @@ export default {
   components: { Tinymce },
   data() {
     return {
-      CategoryList: [
-        {
-          category_id: "0",
-          category_name: "综合新闻",
-          category_desc: "放置综合类型的新闻"
-        },
-        {
-          category_id: "1",
-          category_name: "公告通知",
-          category_desc: "放置公告通知"
-        },
-        {
-          category_id: "2",
-          category_name: "缤纷校园",
-          category_desc: "放置校园活动相关的新闻"
-        },
-        {
-          category_id: "3",
-          category_name: "学术成果",
-          category_desc: "放置学术成果相关的新闻"
-        },
-        {
-          category_id: "4",
-          category_name: "学术动态",
-          category_desc: "放置学术动态相关的新闻"
-        },
-        {
-          category_id: "5",
-          category_name: "学术竞赛",
-          category_desc: "放置学术竞赛相关的新闻"
-        },
-        {
-          category_id: "6",
-          category_name: "校园人物",
-          category_desc: "放置校园人物相关的新闻"
-        }
-      ],
+      categoryList: [],
       form: {
         news_title: "",
         news_subtitle: "",
@@ -143,6 +119,11 @@ export default {
       data: "",
       dialogNewsVisible: false
     };
+  },
+  created: function() {
+    getCategory().then(res => {
+      this.categoryList = res.data.data;
+    });
   },
   methods: {
     // 选取封面图片
@@ -189,6 +170,12 @@ export default {
         this.$router.push({
           name: "news_list"
         });
+      } else {
+        this.$message({
+          message: "发布失败！",
+          type: "warning"
+        });
+        console.log(result);
       }
     },
 
@@ -208,7 +195,6 @@ export default {
         message: "已清空!",
         type: "success"
       });
-      console.log(this.form);
     }
   }
 };

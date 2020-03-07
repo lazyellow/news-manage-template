@@ -39,12 +39,21 @@
           <el-table-column label="审核人员" prop="news_reviewer" width="150"></el-table-column>
           <el-table-column label="操作" width="300">
             <template slot-scope="scope">
-              <el-button size="mini" @click="handleLook(scope.$index, scope.row)">查看</el-button>
-              <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+              <el-button size="mini" @click="handleLook(scope.$index, scope.row)">查看内容</el-button>
+              <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
               <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
               <!-- 查看弹窗 -->
               <el-dialog :visible.sync="dialogNewsVisible">
-                <div v-html="checkNews" />
+                <div class="news-title">{{check_title}}</div>
+                <div class="news-message">
+                  <span>新闻记者：{{check_reporter}}</span>
+                  <span>编辑人员：{{check_editor}}</span>
+                  <span>审核人员：{{check_reviewer}}</span>
+                  <span>发布时间：{{check_time}}</span>
+                  <span>修改时间：{{check_update}}</span>
+                  <span>阅读量：{{check_amount}}</span>
+                </div>
+                <div v-html="check_content" />
               </el-dialog>
             </template>
           </el-table-column>
@@ -62,29 +71,7 @@ export default {
   data() {
     return {
       newsList: [],
-      categoryList: [
-        {
-          text: "综合新闻",
-          value: "综合新闻"
-        },
-        {
-          text: "校园人物",
-          value: "校园人物"
-        },
-        {
-          text: "动态新闻",
-          value: "动态新闻"
-        },
-        {
-          text: "缤纷校园",
-          value: "缤纷校园"
-        },
-        {
-          text: "公告通知",
-          value: "公告通知"
-        }
-      ],
-      CategoryList: [],
+      categoryList: [],
       test: [],
       hot: [
         {
@@ -98,7 +85,14 @@ export default {
       ],
       search: "",
       dialogNewsVisible: false,
-      checkNews: ""
+      check_title: "",
+      check_reporter: "",
+      check_editor: "",
+      check_reviewer: "",
+      check_time: "",
+      check_update: "",
+      check_amount: "",
+      check_content: ""
     };
   },
   created: function() {
@@ -106,12 +100,31 @@ export default {
     getNews().then(res => {
       this.newsList = res.data.data;
     });
+    // 获取新闻类型
+    getCategory().then(res => {
+      this.categoryList = res.data.data;
+      for (let item in this.categoryList) {
+        this.$delete(this.categoryList[item], "Category_desc");
+      }
+      var result = this.categoryList.map(o => {
+        return { text: o.category_name, value: o.category_name };
+      });
+      this.categoryList.length = 0;
+      this.categoryList = result;
+    });
   },
   methods: {
     // 查看操作
     handleLook(index, row) {
       this.dialogNewsVisible = true;
-      this.checkNews = row.news_content;
+      this.check_title = row.news_title;
+      this.check_reporter = row.news_reporter;
+      this.check_editor = row.news_editor;
+      this.check_reviewer = row.news_reviewer;
+      this.check_time = row.news_time;
+      this.check_update = row.news_update;
+      this.check_amount = row.news_amount;
+      this.check_content = row.news_content;
     },
 
     // 编辑操作
@@ -126,10 +139,13 @@ export default {
     async handleDelete(index, row) {
       const result = await deleteNews(row.news_id);
       if (result.data.code === 200) {
-        this.$router.go(0);
         this.$message({
           message: "删除成功",
           type: "success"
+        });
+        getNews().then(res => {
+          this.newsList.length = 0;
+          this.newsList = res.data.data;
         });
       } else {
         this.$message({
@@ -158,5 +174,16 @@ export default {
 <style>
 .search {
   margin: 20px 0px;
+}
+.news-title {
+  font-size: 25px;
+  text-align: center;
+  margin-bottom: 50px;
+}
+.news-message {
+  width: 100%;
+  border: 0.5px solid #cccccc;
+  padding: 20px;
+  color: #999999;
 }
 </style>

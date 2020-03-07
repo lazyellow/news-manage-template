@@ -30,12 +30,12 @@
           @current-change="handleCurrentChange"
           column-key="date"
         >
-          <el-table-column label="类型ID" prop="category_id"></el-table-column>
-          <el-table-column label="类型名称" prop="category_name"></el-table-column>
+          <el-table-column label="类型ID" prop="category_id" width="100"></el-table-column>
+          <el-table-column label="类型名称" prop="category_name" width="200"></el-table-column>
           <el-table-column label="类型描述" prop="Category_desc"></el-table-column>
-          <el-table-column label="操作" prop>
+          <el-table-column label="操作" width="200">
             <template slot-scope="scope">
-              <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+              <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
               <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
               <!-- 编辑弹窗 -->
               <el-dialog title="新闻类型" :visible.sync="dialogFormVisible">
@@ -65,7 +65,12 @@
 
 <script>
 import axios from "axios";
-import { getCategory, addCategory, updateCategory, deleteCategory } from "@/api/category";
+import {
+  getCategory,
+  addCategory,
+  updateCategory,
+  deleteCategory
+} from "@/api/category";
 
 export default {
   data() {
@@ -90,7 +95,6 @@ export default {
   created: function() {
     //调用api中获取分类的接口，把数据渲染到页面上
     getCategory().then(res => {
-      console.log(res)
       this.CategoryList = res.data.data;
     });
   },
@@ -107,13 +111,16 @@ export default {
     async handleDelete(index, row) {
       const result = await deleteCategory(row.category_id);
       if (result.data.code === 200) {
-        this.$router.go(0);
         this.$message({
           message: "删除成功!",
           type: "success"
         });
+        getCategory().then(res => {
+          this.CategoryList = res.data.data;
+        });
       } else {
         this.$message({ message: "删除失败!" });
+        console.log(result)
       }
     },
     handleCurrentChange(val) {
@@ -125,13 +132,16 @@ export default {
       this.dialogAddVisible = false;
       const result = await addCategory(this.add_form);
       if (result.data.code === 200) {
-        this.$router.go(0);
         this.$message({
           message: "添加成功!",
           type: "success"
         });
+        getCategory().then(res => {
+          this.CategoryList = res.data.data;
+        });
       } else {
         this.$message({ message: "添加失败!" });
+        console.log(result)
       }
     },
 
@@ -139,14 +149,17 @@ export default {
     async dialogEditCommit() {
       this.dialogFormVisible = false;
       const result = await updateCategory(this.edit_form);
-       if (result.data.code === 200) {
-        this.$router.go(0);
+      if (result.data.code === 200) {
         this.$message({
           message: "修改成功!",
           type: "success"
         });
+        getCategory().then(res => {
+          this.CategoryList = res.data.data;
+        });
       } else {
         this.$message({ message: "修改失败!" });
+        console.log(result)
       }
     }
   }

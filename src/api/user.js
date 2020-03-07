@@ -29,9 +29,14 @@ export async function getUserRole() {
 
 //添加账号
 export async function addUser(form) {
-  console.log("api:")
-  console.log(form)
   const result  = await axios.post("http://47.101.150.127:3030/user/created",form)
+  return result
+}
+
+//修改账号角色
+export async function updateUserRole(form) {
+  const result = await axios.post(
+    "http://47.101.150.127:3030/user/updateUser", form)
   return result
 }
 
@@ -42,13 +47,6 @@ export async function updateUserInfo(form) {
   return result
 }
 
-//修改账号角色
-export async function updateUserRole(form) {
-  console.log(form)
-  const result = await axios.post(
-    "http://47.101.150.127:3030/user/updateUser", form)
-  return result
-}
 
 //删除账号
 export async function deleteUser(uid) {
