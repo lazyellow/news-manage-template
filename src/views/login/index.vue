@@ -9,9 +9,10 @@
       label-position="left"
     >
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">学院新闻后台系统登陆</h3>
       </div>
 
+      <!-- 账号 -->
       <el-form-item prop="account">
         <span class="svg-container">
           <svg-icon icon-class="user" />
@@ -19,7 +20,7 @@
         <el-input
           ref="account"
           v-model="loginForm.account"
-          placeholder="Username"
+          placeholder="请输入账号"
           name="account"
           type="text"
           tabindex="1"
@@ -27,6 +28,7 @@
         />
       </el-form-item>
 
+      <!-- 密码 -->
       <el-form-item prop="user_pwd">
         <span class="svg-container">
           <svg-icon icon-class="password" />
@@ -36,7 +38,7 @@
           ref="user_pwd"
           v-model="loginForm.user_pwd"
           :type="passwordType"
-          placeholder="Password"
+          placeholder="请输入密码"
           name="user_pwd"
           tabindex="2"
           auto-complete="on"
@@ -47,12 +49,13 @@
         </span>
       </el-form-item>
 
+      <!-- 登录按钮 -->
       <el-button
         :loading="loading"
         type="primary"
         style="width:100%;margin-bottom:30px;"
         @click.native.prevent="handleLogin"
-      >Login</el-button>
+      >登录</el-button>
 
       <div class="tips">
         <span style="margin-right:20px;">username: admin</span>
@@ -73,22 +76,22 @@ export default {
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
-        callback(new Error("Please enter the correct user name"));
+        callback(new Error("请输入正确的用户名"));
       } else {
         callback();
       }
     };
     const validatePassword = (rule, value, callback) => {
       if (value.length < 5) {
-        callback(new Error("The password can not be less than 5 digits"));
+        callback(new Error("密码不能少于5位字符"));
       } else {
         callback();
       }
     };
     return {
       loginForm: {
-        account: "admin",
-        user_pwd: "admin"
+        account: "",
+        user_pwd: ""
       },
       loginRules: {
         account: [
@@ -125,14 +128,14 @@ export default {
     // 点击登陆
     handleLogin() {
       this.$store.dispatch("user/tologin", this.loginForm).then(res => {
-        if (res.data.code == 200) {
+        if (res.data.code === 200) {
           this.$router.push({ path: this.redirect || "/dashboard" }); //重定向到首页
           this.loading = false;
           this.$message({
             message: "登陆成功!",
             type: "success"
           });
-        } else if (res.data.code == 400) {
+        } else if (res.data.code === 400) {
           this.$router.push({ path: this.redirect || "/" }); //重定向到login，重新登陆
           this.$message({
             message: "用户名或密码错误!"

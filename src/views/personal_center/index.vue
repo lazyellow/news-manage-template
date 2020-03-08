@@ -1,12 +1,12 @@
 <template>
   <div class="app-container">
     <el-form
-      :model="ruleForm"
+      :model="updateForm"
       status-icon
       :rules="rules"
-      ref="ruleForm"
+      ref="updateForm"
       label-width="auto"
-      class="ruleForm"
+      class="updateForm"
     >
       <el-form-item label="姓名" prop="userinfo_name">
         <el-col :span="3">
@@ -14,7 +14,7 @@
             type="input"
             size="20px;"
             placeholder="长度为2-10个字符"
-            v-model="ruleForm.userinfo_name"
+            v-model="updateForm.userinfo_name"
             autocomplete="off"
           ></el-input>
         </el-col>
@@ -24,14 +24,14 @@
           <el-input
             type="input"
             placeholder="长度为5-10个字符"
-            v-model="ruleForm.account"
+            v-model="updateForm.account"
             autocomplete="off"
           ></el-input>
         </el-col>
       </el-form-item>
       <el-form-item label="账户角色" prop="role_id">
         <el-col :span="3">
-          <el-select v-model="ruleForm.role_id" placeholder="请选择角色">
+          <el-select v-model="updateForm.role_id" placeholder="请选择角色">
             <el-option
               v-for="item in roleData"
               :key="item.role_id"
@@ -44,33 +44,41 @@
       <el-form-item label="密码" prop="user_pwd">
         <el-col :span="3">
           <el-input
-            type="password"
+            :type="passwordType"
             placeholder="密码长度为6-10个字符"
-            v-model="ruleForm.user_pwd"
-            autocomplete="off"
+            v-model="updateForm.user_pwd"
+            auto-complete="on"
+            ref="user_pwd"
           ></el-input>
+          <span class="show-pwd" @click="showPwd">
+            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+          </span>
         </el-col>
       </el-form-item>
       <el-form-item label="确认密码" prop="checkPass">
         <el-col :span="3">
           <el-input
-            type="password"
+            :type="cpasswordType"
             placeholder="请保持两次密码一致"
-            v-model="ruleForm.checkPass"
-            autocomplete="off"
+            v-model="updateForm.checkPass"
+            auto-complete="off"
+            ref="checkPass"
           ></el-input>
+          <span class="show-pwd" @click="showcheckPwd">
+            <svg-icon :icon-class="cpasswordType === 'password' ? 'eye' : 'eye-open'" />
+          </span>
         </el-col>
       </el-form-item>
       <el-form-item label="性别" prop="userinfo_sex">
-        <el-radio v-model="ruleForm.userinfo_sex" label="男"></el-radio>
-        <el-radio v-model="ruleForm.userinfo_sex" label="女"></el-radio>
+        <el-radio v-model="updateForm.userinfo_sex" label="男"></el-radio>
+        <el-radio v-model="updateForm.userinfo_sex" label="女"></el-radio>
       </el-form-item>
       <el-form-item label="联系电话" prop="userinfo_phone">
         <el-col :span="3">
           <el-input
             type="input"
             placeholder="请输入有效号码"
-            v-model="ruleForm.userinfo_phone"
+            v-model="updateForm.userinfo_phone"
             autocomplete="off"
           ></el-input>
         </el-col>
@@ -80,21 +88,25 @@
           <el-input
             type="email"
             placeholder="请输入有效的邮箱地址"
-            v-model="ruleForm.userinfo_email"
+            v-model="updateForm.userinfo_email"
             autocomplete="off"
           ></el-input>
         </el-col>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm()">添加</el-button>
-        <el-button @click="resetForm('ruleForm')">重置</el-button>
+        <el-button type="primary" @click="submitForm()">修改</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 <script>
 import { getToken } from "@/utils/auth";
-import { getRoleAll, addUser } from "@/api/user";
+import {
+  getPersonalInfo,
+  getRoleAll,
+  updateUserInfo,
+  updateUserRole
+} from "@/api/user";
 export default {
   data() {
     var validatePass = (rule, value, callback) => {
@@ -117,15 +129,30 @@ export default {
     };
 
     return {
-      ruleForm: {
-        userinfo_name: "",
+      updateForm: {
+        user_id: "",
         account: "",
-        role_id: "",
         user_pwd: "",
         checkPass: "",
-        userinfo_sex: "男",
+        role_id: "",
+        userinfo_id: "",
+        userinfo_name: "",
+        userinfo_sex: "",
         userinfo_phone: "",
         userinfo_email: ""
+      },
+      updateUserInfoForm: {
+        userinfo_id: "",
+        userinfo_name: "",
+        userinfo_sex: "",
+        userinfo_phone: "",
+        userinfo_email: ""
+      },
+      updateUserRoleForm: {
+        user_id: "",
+        account: "",
+        user_pwd: "",
+        role_id: ""
       },
       roleData: [],
       rules: {
@@ -185,11 +212,27 @@ export default {
             trigger: "blur"
           }
         ]
-      }
+      },
+      passwordType: "password",
+      cpasswordType: "password"
     };
   },
   created: function() {
+    // 个人信息数据初始化
     let token = getToken();
+    getPersonalInfo(token).then(res => {
+        this.updateForm.user_id = res.data.data.user_id,
+        this.updateForm.account = res.data.data.account,
+        this.updateForm.role_id = res.data.data.role_id,
+        this.updateForm.user_pwd = res.data.data.user_pwd,
+        this.updateForm.checkPass = res.data.data.user_pwd,
+        this.updateForm.userinfo_id = res.data.data.Userinfo_id,
+        this.updateForm.userinfo_name = res.data.data.UserInfo.userinfo_name,
+        this.updateForm.userinfo_sex = res.data.data.UserInfo.userinfo_sex,
+        this.updateForm.userinfo_phone = res.data.data.UserInfo.userinfo_phone,
+        this.updateForm.userinfo_email = res.data.data.UserInfo.userinfo_email
+    });
+
     // 角色列表数据初始化
     getRoleAll(token).then(res => {
       if (res.data.code === 200) {
@@ -205,39 +248,79 @@ export default {
     });
   },
   methods: {
-    // 添加
+    showPwd() {
+      if (this.passwordType === "password") {
+        this.passwordType = "";
+      } else if (this.passwordType === "") {
+        this.passwordType = "password";
+      }
+      this.$nextTick(() => {
+        this.$refs.user_pwd.focus();
+      });
+    },
+    showcheckPwd() {
+      if (this.cpasswordType === "password") {
+        this.cpasswordType = "";
+      } else if (this.cpasswordType === "") {
+        this.cpasswordType = "password";
+      }
+      this.$nextTick(() => {
+        this.$refs.checkPass.focus();
+      });
+    },
+    // 修改
     async submitForm() {
-      this.$delete(this.ruleForm, "checkPass");
-      const result = await addUser(this.ruleForm);
-      console.log(result);
-      if (result.data.code === 200) {
+      //   用户角色信息提交数据
+      this.updateUserRoleForm.user_id = this.updateForm.user_id;
+      this.updateUserRoleForm.account = this.updateForm.account;
+      this.updateUserRoleForm.user_pwd = this.updateForm.user_pwd;
+      this.updateUserRoleForm.role_id = this.updateForm.role_id;
+
+      // 用户基本信息提交数据
+      this.updateUserInfoForm.userinfo_id = this.updateForm.userinfo_id;
+      this.updateUserInfoForm.userinfo_name = this.updateForm.userinfo_name;
+      this.updateUserInfoForm.userinfo_sex = this.updateForm.userinfo_sex;
+      this.updateUserInfoForm.userinfo_phone = this.updateForm.userinfo_phone;
+      this.updateUserInfoForm.userinfo_email = this.updateForm.userinfo_email;
+      
+      const resultUserInfo = await updateUserInfo(this.updateUserInfoForm);
+      const resultUserRole = await updateUserRole(this.updateUserRoleForm);
+      if (resultUserInfo.data.code === 200 && resultUserRole.data.code === 200) {
         this.$message({
-          message: "添加成功!",
+          message: "修改成功",
           type: "success"
         });
-        // 跳转到用户角色列表
-        this.$router.push({
-          name: "user_account"
+        // 数据重新初始化
+        getPersonalInfo(token).then(res => {
+            this.updateForm.user_id = res.data.data.user_id,
+            this.updateForm.userinfo_name = res.data.data.UserInfo.userinfo_name,
+            this.updateForm.account = res.data.data.account,
+            this.updateForm.role_id = res.data.data.role_id,
+            this.updateForm.user_pwd = res.data.data.user_pwd,
+            this.updateForm.checkPass = res.data.data.user_pwd,
+            this.updateForm.userinfo_sex = res.data.data.UserInfo.userinfo_sex,
+            this.updateForm.userinfo_phone = res.data.data.UserInfo.userinfo_phone,
+            this.updateForm.userinfo_email = res.data.data.UserInfo.userinfo_email
         });
       } else {
-        console.log(result);
         this.$message({
-          message: "添加失败!",
+          message: "修改失败",
           type: "warning"
         });
+        console.log(resultUserInfo)
+        console.log(resultUserRole)
       }
     },
-
-    // 重置
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
-    }
   }
 };
 </script>
-<style scoped>
-.app-container {
-  margin-top: 40px;
-  margin-left: 60px;
+<style lang="scss" scoped>
+.show-pwd {
+  position: absolute;
+  left: 130px;
+  font-size: 16px;
+  color: #889aa4;
+  cursor: pointer;
+  user-select: none;
 }
 </style>

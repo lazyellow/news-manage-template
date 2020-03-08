@@ -38,11 +38,11 @@ const actions = {
     const { account, user_pwd } = userInfo
     commit('SET_NAME', account)   //存储用户名到vuex
     commit('SET_ROLES', account)  //存储该用户的角色权限到vuex
-    
+
     //将登陆信息发送到登陆接口验证
-    const result = await login(account, user_pwd) 
+    const result = await login(account, user_pwd)
     console.log(result)
-    if(result.data.code === 200){  //如果登陆成功，则将返回的token存储到cookie中
+    if (result.data.code === 200) {  //如果登陆成功，则将返回的token存储到cookie中
       setToken(result.data.data.toKen)  //将token存储到cookie中
       commit('SET_TOKEN', result.data.data.toKen)  //存储token到vuex
     }
@@ -73,17 +73,21 @@ const actions = {
 
   // user logout
   logout({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
-        removeToken() // must remove  token  first
-        resetRouter()
-        commit('RESET_STATE')
-        commit('SET_ROLES', [])
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
-    })
+    // return new Promise((resolve, reject) => {
+    //   logout(state.token).then(() => {
+    //     removeToken() // must remove  token  first
+    //     resetRouter()
+    //     commit('RESET_STATE')
+    //     commit('SET_ROLES', [])
+    //     resolve()
+    //   }).catch(error => {
+    //     reject(error)
+    //   })
+    // })
+    removeToken()
+    resetRouter()
+    commit('RESET_STATE')
+    commit('SET_ROLES', [])
   },
 
   // remove token

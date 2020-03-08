@@ -41,11 +41,14 @@
                     <el-input v-model="edit_form.user_pwd"></el-input>
                   </el-form-item>
                   <el-form-item label="账号角色" :label-width="formLabelWidth">
-                    <el-radio-group v-model="edit_form.role_id">
-                      <el-radio label="3">新闻记者</el-radio>
-                      <el-radio label="2">新闻处长</el-radio>
-                      <el-radio label="1">管理员</el-radio>
-                    </el-radio-group>
+                    <el-select v-model="edit_form.role_id" placeholder="请选择角色">
+                      <el-option
+                        v-for="item in roleData"
+                        :key="item.role_id"
+                        :label="item.role_name"
+                        :value="item.role_id"
+                      ></el-option>
+                    </el-select>
                   </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
@@ -62,7 +65,14 @@
 </template>
 
 <script>
-import { getUserRole, updateUserRole, deleteUser } from "@/api/user";
+import { getToken } from "@/utils/auth";
+import {
+  getUserRole,
+  getRoleAll,
+  updateUserRole,
+  deleteUser
+} from "@/api/user";
+
 export default {
   data() {
     return {
@@ -74,6 +84,7 @@ export default {
         role_id: "",
         role_name: ""
       },
+      roleData: [],
       roleFilter: [
         {
           text: "管理员",
@@ -118,7 +129,20 @@ export default {
       }
     });
 
-    // console.log(this.tableData)
+    // 角色列表数据初始化
+    let token = getToken();
+    getRoleAll(token).then(res => {
+      if (res.data.code === 200) {
+        for (let item of res.data.data) {
+          this.roleData.push({
+            role_id: item.role_id,
+            role_name: item.role_name
+          });
+        }
+      } else {
+        console.log(res);
+      }
+    });
   },
   methods: {
     // 编辑弹窗，数据初始化
@@ -163,7 +187,6 @@ export default {
     async dialogEditCommit() {
       // this.$delete(this.edit_form, "role_name");
       const result = await updateUserRole(this.edit_form);
-      console.log(result);
       this.dialogFormVisible = false;
       if (result.data.code === 200) {
         this.$message({

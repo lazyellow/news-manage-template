@@ -15,6 +15,12 @@ export function logout() {
   })
 }
 
+//获取当前账号信息
+export async function getPersonalInfo(token) {
+  const result = await axios.get("http://47.101.150.127:3030/user/getMyInfo?token="+token)
+  return result
+}
+
 // 获取账号基本信息
 export async function getUserInfo() {
   const result = await axios.get("http://47.101.150.127:3030/user/getAllUserInfo")
@@ -24,6 +30,12 @@ export async function getUserInfo() {
 // 获取账号角色
 export async function getUserRole() {
   const result = await axios.get("http://47.101.150.127:3030/user/getAllUser")
+  return result
+}
+
+//获取角色
+export async function getRoleAll(token) {
+  const result = await axios.get("http://47.101.150.127:3030/user/getRoleAll")
   return result
 }
 
