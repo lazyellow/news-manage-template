@@ -38,26 +38,42 @@ export default {
       chart: null,
       resultData: [],
       cnameList: [],
-      ccountList: []
+      ccountList: [],
+      option: {
+        tooltip: {
+          trigger: "item",
+          formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+          left: "center",
+          bottom: "10",
+          data: []
+        },
+        series: {
+          name: "各类型新闻数量",
+          type: "pie",
+          roseType: "radius",
+          radius: [15, 95],
+          center: ["50%", "38%"],
+          data: [],
+          animationEasing: "cubicInOut",
+          animationDuration: 2600
+        }
+      }
     };
   },
   created() {
     getCategory().then(result => {
-      // this.resultData = res.data.data;
-      // console.log(this.resultData);
-      for (let item in result.data.data) {
-        let i = result.data.data[item];
+      for (let item of result.data.data) {
         // 获取不同类型的新闻数量
-        getCategoryNews(i.category_id).then(res => {
-          this.cnameList.push(res.data.data[0].Category.category_name);
-          this.ccountList.push({
+        getCategoryNews(item.category_id).then(res => {
+          this.option.legend.data.push(res.data.data[0].Category.category_name);
+          this.option.series.data.push({
             value: res.data.data.length,
             name: res.data.data[0].Category.category_name
           });
         });
       }
-      // console.log(this.cnameList)
-      // console.log(this.ccountList)
     });
   },
   mounted() {
@@ -74,30 +90,9 @@ export default {
   },
   methods: {
     initChart() {
+      console.log(this.option);
       this.chart = echarts.init(this.$el, "macarons");
-      this.chart.setOption({
-        tooltip: {
-          trigger: "item",
-          formatter: "{a} <br/>{b} : {c} ({d}%)"
-        },
-        legend: {
-          left: "center",
-          bottom: "10",
-          data: this.cnameList
-        },
-        series: [
-          {
-            name: "各类型新闻数量",
-            type: "pie",
-            roseType: "radius",
-            radius: [15, 95],
-            center: ["50%", "38%"],
-            data: this.ccountList,
-            animationEasing: "cubicInOut",
-            animationDuration: 2600
-          }
-        ]
-      });
+      this.chart.setOption(this.option);
     }
   }
 };

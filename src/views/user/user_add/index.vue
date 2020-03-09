@@ -209,7 +209,6 @@ export default {
     async submitForm() {
       this.$delete(this.ruleForm, "checkPass");
       const result = await addUser(this.ruleForm);
-      console.log(result);
       if (result.data.code === 200) {
         this.$message({
           message: "添加成功!",

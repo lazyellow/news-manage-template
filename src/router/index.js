@@ -142,36 +142,36 @@ export const constantRoutes = [
     ]
   },
 
-  {
-    path: '/user',
-    component: Layout,
-    redirect: '/user/user_account',
-    name: 'user_account',
-    meta: {
-      title: '用户账号管理',
-      icon: 'example'
-    },
-    children: [
-      {
-        path: 'user_add',
-        name: 'user_add',
-        component: () => import('@/views/user/user_add/index'),
-        meta: { title: '添加账号', icon: 'table' }
-      },
-      {
-        path: 'user_account/:user_id',
-        name: 'user_account',
-        component: () => import('@/views/user/user_account/index'),
-        meta: { title: '账号角色管理', icon: 'table' }
-      },
-      {
-        path: 'user_info',
-        name: 'user_info',
-        component: () => import('@/views/user/user_info/index'),
-        meta: { title: '账号信息管理', icon: 'table' }
-      }
-    ]
-  },
+  // {
+  //   path: '/user',
+  //   component: Layout,
+  //   redirect: '/user/user_account',
+  //   name: 'user_account',
+  //   meta: {
+  //     title: '用户账号管理',
+  //     icon: 'example'
+  //   },
+  //   children: [
+  //     {
+  //       path: 'user_add',
+  //       name: 'user_add',
+  //       component: () => import('@/views/user/user_add/index'),
+  //       meta: { title: '添加账号', icon: 'table' }
+  //     },
+  //     {
+  //       path: 'user_account/:user_id',
+  //       name: 'user_account',
+  //       component: () => import('@/views/user/user_account/index'),
+  //       meta: { title: '账号角色管理', icon: 'table' }
+  //     },
+  //     {
+  //       path: 'user_info',
+  //       name: 'user_info',
+  //       component: () => import('@/views/user/user_info/index'),
+  //       meta: { title: '账号信息管理', icon: 'table' }
+  //     }
+  //   ]
+  // },
 
   {
     path: '/personal_center',
@@ -200,74 +200,6 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
   {
-    path: '/news_category',
-    component: Layout,
-    meta: { roles: ['admin', 'director'] },
-    children: [
-      {
-        path: 'index',
-        name: 'news_category',
-        component: () => import('@/views/news_category/index'),
-        meta: {
-          title: '新闻分类管理',
-          icon: 'nested'
-        }
-      }
-    ]
-  },
-
-  {
-    path: '/news_content',
-    component: Layout,
-    redirect: '/news_content/news_list',
-    name: 'news_list',
-    meta: {
-      title: '新闻内容管理',
-      icon: 'example',
-      roles: ['admin']
-    },
-    children: [
-      {
-        path: 'news_list',
-        name: 'news_list',
-        component: () => import('@/views/news_content/news_list/index'),
-        meta: {
-          title: '新闻列表',
-          icon: 'table'
-        }
-      },
-      {
-        path: 'news_edit',
-        name: 'news_edit',
-        component: () => import('@/views/news_content/news_edit/index'),
-        meta: {
-          title: '新闻编辑',
-          icon: 'form'
-        }
-      }
-    ]
-  },
-
-  {
-    path: '/news_hot',
-    component: Layout,
-    meta: {
-      roles: ['admin']
-    },
-    children: [
-      {
-        path: 'index',
-        name: 'news_hot',
-        component: () => import('@/views/news_hot/index'),
-        meta: {
-          title: '热点新闻管理',
-          icon: 'example'
-        }
-      }
-    ]
-  },
-
-  {
     path: '/user',
     component: Layout,
     redirect: '/user/user_account',
@@ -275,35 +207,26 @@ export const asyncRoutes = [
     meta: {
       title: '用户账号管理',
       icon: 'example',
-      roles: ['admin']
+      roles: ['1']
     },
     children: [
       {
         path: 'user_add',
         name: 'user_add',
         component: () => import('@/views/user/user_add/index'),
-        meta: {
-          title: '添加账号',
-          icon: 'table'
-        }
+        meta: { title: '添加账号', icon: 'table' }
       },
       {
-        path: 'user_account',
+        path: 'user_account/:user_id',
         name: 'user_account',
         component: () => import('@/views/user/user_account/index'),
-        meta: {
-          title: '账号角色管理',
-          icon: 'table'
-        }
+        meta: { title: '账号角色管理', icon: 'table' }
       },
       {
         path: 'user_info',
         name: 'user_info',
         component: () => import('@/views/user/user_info/index'),
-        meta: {
-          title: '账号信息管理',
-          icon: 'table'
-        }
+        meta: { title: '账号信息管理', icon: 'table' }
       }
     ]
   },
@@ -311,10 +234,7 @@ export const asyncRoutes = [
   {
     path: '*',
     redirect: '/404',
-    hidden: true,
-    meta: {
-      roles: ['admin']
-    }
+    hidden: true
   }
 ]
 

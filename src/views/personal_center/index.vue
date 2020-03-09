@@ -100,7 +100,7 @@
   </div>
 </template>
 <script>
-import { getToken } from "@/utils/auth";
+import { getToken, getRole } from "@/utils/auth";
 import {
   getPersonalInfo,
   getRoleAll,

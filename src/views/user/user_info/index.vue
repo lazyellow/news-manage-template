@@ -95,7 +95,6 @@ export default {
     //编辑弹窗，数据初始化
     handleEdit(index, row) {
       this.dialogFormVisible = true;
-      // this.edit_form.user_id = row.user_id;
       this.edit_form.userinfo_id = row.Userinfo_id;
       this.edit_form.userinfo_name = row.UserInfo.Userinfo_name;
       this.edit_form.userinfo_sex = row.UserInfo.Userinfo_sex;
@@ -124,7 +123,6 @@ export default {
           message: "修改成功",
           type: "success"
         });
-        // this.$router.go(0)
         getUserInfo().then(res => {
           this.tableData.length = 0;
           for (let item of res.data.data.rows) {

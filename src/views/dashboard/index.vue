@@ -3,7 +3,7 @@
     <github-corner class="github-corner" />
     <!-- 各类总数量 -->
     <panel-group />
-    
+
     <el-row :gutter="32">
       <el-col :span="18">
         <h2>新闻类型统计</h2>
@@ -80,29 +80,8 @@ export default {
     return {
       cnameList: [],
       ccountList: [],
-      rcountList:[]
+      rcountList: []
     };
-  },
-  created() {
-    // getCategory().then(result => {
-    //   for (let item in result.data.data) {
-    //     let i = result.data.data[item];
-
-    //     // 获取不同类型的新闻数量
-    //     getCategoryNews(i.category_id).then(res => {
-    //       this.cnameList.push(res.data.data[0].Category.category_name)
-    //       this.ccountList.push({
-    //         value: res.data.data.length,
-    //         name: res.data.data[0].Category.category_name
-    //       });
-    //       // console.log(res.data.data)
-    //       // for(let item in res.data.data){
-    //       //   let amount = 0
-    //       //   amount = amount + item.read_amount
-    //       // }
-    //     });
-    //   }
-    // });
   }
 };
 </script>

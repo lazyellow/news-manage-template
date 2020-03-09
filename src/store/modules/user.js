@@ -1,11 +1,12 @@
-import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { login, logout, getPersonalInfo } from '@/api/user'
+import { getToken, setToken, removeToken, getRole, setRole, removeRole } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 import axios from "axios";
+import { asyncRoutes, constantRoutes } from '@/router'
 
 const getDefaultState = () => {
   return {
-    token: getToken(),
+    token: '',
     name: '',
     avatar: '',
     roles: ''
@@ -37,11 +38,9 @@ const actions = {
   async tologin({ commit }, userInfo) {
     const { account, user_pwd } = userInfo
     commit('SET_NAME', account)   //存储用户名到vuex
-    commit('SET_ROLES', account)  //存储该用户的角色权限到vuex
 
     //将登陆信息发送到登陆接口验证
     const result = await login(account, user_pwd)
-    console.log(result)
     if (result.data.code === 200) {  //如果登陆成功，则将返回的token存储到cookie中
       setToken(result.data.data.toKen)  //将token存储到cookie中
       commit('SET_TOKEN', result.data.data.toKen)  //存储token到vuex
@@ -50,25 +49,14 @@ const actions = {
   },
 
   // get user info
-  getInfo({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
-        const { data } = response
-
-        if (!data) {
-          reject('Verification failed, please Login again.')
-        }
-
-        const { name, avatar, roles } = data
-
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        commit('SET_ROLES', roles)
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
-    })
+  async getInfo({ commit, state }) {
+    // const result = await getPersonalInfo(state.token)
+    // commit('SET_ROLES', result.data.data.role_id)
+    // setRole(result.data.data.role_id)
+    // return result
+    commit('SET_ROLES', "1")
+    setRole("1")
+    return 1
   },
 
   // user logout
@@ -85,8 +73,10 @@ const actions = {
     //   })
     // })
     removeToken()
+    removeRole()
     resetRouter()
     commit('RESET_STATE')
+    commit('SET_TOKEN', [])
     commit('SET_ROLES', [])
   },
 
