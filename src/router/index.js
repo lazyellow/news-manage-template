@@ -69,78 +69,78 @@ export const constantRoutes = [
   //   ]
   // },
 
-  {
-    path: '/slider',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'slider',
-        component: () => import('@/views/slider/index'),
-        meta: { title: '轮播图管理', icon: 'nested' }
-      }
-    ]
-  },
+  // {
+  //   path: '/slider',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'slider',
+  //       component: () => import('@/views/slider/index'),
+  //       meta: { title: '轮播图管理', icon: 'nested' }
+  //     }
+  //   ]
+  // },
 
-  {
-    path: '/news_category',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'news_category',
-        component: () => import('@/views/news_category/index'),
-        meta: { title: '新闻分类管理', icon: 'nested' }
-      }
-    ]
-  },
+  // {
+  //   path: '/news_category',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'news_category',
+  //       component: () => import('@/views/news_category/index'),
+  //       meta: { title: '新闻分类管理', icon: 'nested' }
+  //     }
+  //   ]
+  // },
 
-  {
-    path: '/news_content',
-    component: Layout,
-    redirect: '/news_content/news_list',
-    name: 'news_list',
-    meta: {
-      title: '新闻内容管理',
-      icon: 'example'
-    },
-    children: [
-      {
-        path: 'news_list',
-        name: 'news_list',
-        component: () => import('@/views/news_content/news_list/index'),
-        meta: { title: '新闻列表', icon: 'table' }
-      },
-      {
-        path: 'news_add',
-        name: 'news_add',
-        component: () => import('@/views/news_content/news_add/index'),
-        meta: { title: '发布新闻', icon: 'form' }
-      },
-      {
-        path: 'news_edit/:newsMessage',
-        name: 'news_edit',
-        component: () => import('@/views/news_content/news_edit/index')
-      }
-    ]
-  },
+  // {
+  //   path: '/news_content',
+  //   component: Layout,
+  //   redirect: '/news_content/news_list',
+  //   name: 'news_list',
+  //   meta: {
+  //     title: '新闻内容管理',
+  //     icon: 'example'
+  //   },
+  //   children: [
+  //     {
+  //       path: 'news_list',
+  //       name: 'news_list',
+  //       component: () => import('@/views/news_content/news_list/index'),
+  //       meta: { title: '新闻列表', icon: 'table' }
+  //     },
+  //     {
+  //       path: 'news_add',
+  //       name: 'news_add',
+  //       component: () => import('@/views/news_content/news_add/index'),
+  //       meta: { title: '发布新闻', icon: 'form' }
+  //     },
+  //     {
+  //       path: 'news_edit/:newsMessage',
+  //       name: 'news_edit',
+  //       component: () => import('@/views/news_content/news_edit/index')
+  //     }
+  //   ]
+  // },
 
-  {
-    path: '/news_hot',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'news_hot',
-        component: () => import('@/views/news_hot/index'),
-        meta: {
-          title: '热点新闻管理',
-          icon: 'example'
+  // {
+  //   path: '/news_hot',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'news_hot',
+  //       component: () => import('@/views/news_hot/index'),
+  //       meta: {
+  //         title: '热点新闻管理',
+  //         icon: 'example'
 
-        }
-      }
-    ]
-  },
+  //       }
+  //     }
+  //   ]
+  // },
 
   // {
   //   path: '/user',
@@ -173,25 +173,25 @@ export const constantRoutes = [
   //   ]
   // },
 
-  {
-    path: '/personal_center',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'personal_center',
-        component: () => import('@/views/personal_center/index'),
-        meta: {
-          title: '个人信息',
-          icon: 'example'
+  // {
+  //   path: '/personal_center',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'personal_center',
+  //       component: () => import('@/views/personal_center/index'),
+  //       meta: {
+  //         title: '个人信息',
+  //         icon: 'example'
 
-        }
-      }
-    ]
-  },
+  //       }
+  //     }
+  //   ]
+  // },
 
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  // { path: '*', redirect: '/404', hidden: true }
 ]
 
 /**
@@ -199,6 +199,156 @@ export const constantRoutes = [
  * 代表那些需求动态判断权限并通过 addRoutes 动态添加的页面
  */
 export const asyncRoutes = [
+  {
+    path: '/news_count',
+    component: Layout,
+    meta: {
+      title: '新闻统计',
+      icon: 'dashboard',
+      roles: ['1']
+    },
+    children: [
+      {
+        path: 'index',
+        name: 'news_count',
+        component: () => import('@/views/news_count/index'),
+        meta: {
+          title: '新闻统计',
+          icon: 'dashboard',
+          roles: ['1']
+        }
+      }
+    ]
+  },
+
+  {
+    path: '/slider',
+    component: Layout,
+    meta: {
+      title: '轮播图管理',
+      icon: 'nested',
+      roles: ['1']
+    },
+    children: [
+      {
+        path: 'index',
+        name: 'slider',
+        component: () => import('@/views/slider/index'),
+        meta: {
+          title: '轮播图管理',
+          icon: 'nested',
+          roles: ['1']
+        }
+      }
+    ]
+  },
+
+  {
+    path: '/news_category',
+    component: Layout,
+    meta: {
+      title: '新闻分类管理',
+      icon: 'nested',
+      roles: ['1']
+    },
+    children: [
+      {
+        path: 'index',
+        name: 'news_category',
+        component: () => import('@/views/news_category/index'),
+        meta: {
+          title: '新闻分类管理',
+          icon: 'nested',
+          roles: ['1']
+        }
+      }
+    ]
+  },
+
+  {
+    path: '/news_content',
+    component: Layout,
+    redirect: '/news_content/news_list',
+    name: 'news_list',
+    meta: {
+      title: '新闻内容管理',
+      icon: 'example',
+      roles: ['1', '2', '3']
+    },
+    children: [
+      {
+        path: 'news_add',
+        name: 'news_add',
+        component: () => import('@/views/news_content/news_add/index'),
+        meta: {
+          title: '发布新闻',
+          icon: 'form',
+          roles: ['1', '2', '3']
+        }
+      }
+    ]
+  },
+  {
+    path: '/news_content',
+    component: Layout,
+    redirect: '/news_content/news_list',
+    name: 'news_list',
+    meta: {
+      title: '新闻内容管理',
+      icon: 'example',
+      roles: ['1', '2']
+    },
+    children: [
+      {
+        path: 'news_list',
+        name: 'news_list',
+        component: () => import('@/views/news_content/news_list/index'),
+        meta: {
+          title: '新闻列表',
+          icon: 'table',
+          roles: ['1', '2']
+        }
+      },
+      // {
+      //   path: 'news_add',
+      //   name: 'news_add',
+      //   component: () => import('@/views/news_content/news_add/index'),
+      //   meta: {
+      //     title: '发布新闻',
+      //     icon: 'form',
+      //     roles: ['1', '2', '3']
+      //   }
+      // },
+      {
+        path: 'news_edit/:newsMessage',
+        name: 'news_edit',
+        component: () => import('@/views/news_content/news_edit/index')
+      }
+    ]
+  },
+
+  {
+    path: '/news_hot',
+    component: Layout,
+    meta: {
+      title: '热点新闻管理',
+      icon: 'example',
+      roles: ['1', '2']
+    },
+    children: [
+      {
+        path: 'index',
+        name: 'news_hot',
+        component: () => import('@/views/news_hot/index'),
+        meta: {
+          title: '热点新闻管理',
+          icon: 'example',
+          roles: ['1', '2']
+        }
+      }
+    ]
+  },
+
   {
     path: '/user',
     component: Layout,
@@ -214,22 +364,56 @@ export const asyncRoutes = [
         path: 'user_add',
         name: 'user_add',
         component: () => import('@/views/user/user_add/index'),
-        meta: { title: '添加账号', icon: 'table' }
+        meta: {
+          title: '添加账号',
+          icon: 'table',
+          roles: ['1']
+        }
       },
       {
         path: 'user_account/:user_id',
         name: 'user_account',
         component: () => import('@/views/user/user_account/index'),
-        meta: { title: '账号角色管理', icon: 'table' }
+        meta: {
+          title: '账号角色管理',
+          icon: 'table',
+          roles: ['1']
+        }
       },
       {
         path: 'user_info',
         name: 'user_info',
         component: () => import('@/views/user/user_info/index'),
-        meta: { title: '账号信息管理', icon: 'table' }
+        meta: {
+          title: '账号信息管理',
+          icon: 'table',
+          roles: ['1']
+        }
       }
     ]
   },
+
+  // {
+  //   path: '/personal_center',
+  //   component: Layout,
+  //   meta: {
+  //     title: '个人信息',
+  //     icon: 'example',
+  //     roles: ['1', '2', '3']
+  //   },
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'personal_center',
+  //       component: () => import('@/views/personal_center/index'),
+  //       meta: {
+  //         title: '个人信息',
+  //         icon: 'example',
+  //         roles: ['1', '2', '3']
+  //       }
+  //     }
+  //   ]
+  // },
 
   {
     path: '*',

@@ -4,6 +4,7 @@ import axios from "axios";
 // 登陆接口
 export async function login(user, pwd) {
   const result = await axios.post("http://47.101.150.127:3030/user/login", { account: user, user_pwd: pwd })
+  console.log(result)
   return result
 }
 

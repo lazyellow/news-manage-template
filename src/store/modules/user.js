@@ -3,13 +3,15 @@ import { getToken, setToken, removeToken, getRole, setRole, removeRole } from '@
 import router, { resetRouter } from '@/router'
 import axios from "axios";
 import { asyncRoutes, constantRoutes } from '@/router'
+import store from '..';
 
 const getDefaultState = () => {
   return {
     token: '',
     name: '',
     avatar: '',
-    roles: ''
+    roles: '',
+    rolesname: ''
   }
 }
 
@@ -30,36 +32,46 @@ const mutations = {
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+  SET_ROLESNAME: (state, rolesname) => {
+    state.rolesname = rolesname
   }
 }
 
 const actions = {
-  // user login
+  // 用户登录
   async tologin({ commit }, userInfo) {
+    console.log()
     const { account, user_pwd } = userInfo
     commit('SET_NAME', account)   //存储用户名到vuex
 
     //将登陆信息发送到登陆接口验证
     const result = await login(account, user_pwd)
     if (result.data.code === 200) {  //如果登陆成功，则将返回的token存储到cookie中
-      setToken(result.data.data.toKen)  //将token存储到cookie中
+      commit('SET_ROLESNAME', result.data.data.user.Role.role_name)
       commit('SET_TOKEN', result.data.data.toKen)  //存储token到vuex
+      setToken(result.data.data.toKen)  //将token存储到cookie中
+      console.log("---1.登录获取token存储在store和cookies中")
+      console.log(result.data.data.toKen)
+      console.log(getToken())
+      // commit('SET_ROLES', result.data.data.user.Role.role_id.toString())
+      // setRole(result.data.data.user.Role.role_id.toString())
+      // console.log()
     }
     return result
   },
 
-  // get user info
+  // 获取用户权限信息
   async getInfo({ commit, state }) {
-    // const result = await getPersonalInfo(state.token)
-    // commit('SET_ROLES', result.data.data.role_id)
-    // setRole(result.data.data.role_id)
-    // return result
-    commit('SET_ROLES', "1")
-    setRole("1")
-    return 1
+    console.log('----获取用户权限接口的result------')
+    const result = await getPersonalInfo(state.token)
+    console.log(result)
+    commit('SET_ROLES', result.data.data.role_id.toString())
+    setRole(result.data.data.role_id.toString())
+    return result.data.data.role_id.toString()
   },
 
-  // user logout
+  // 退出登录
   logout({ commit, state }) {
     // return new Promise((resolve, reject) => {
     //   logout(state.token).then(() => {
@@ -72,20 +84,24 @@ const actions = {
     //     reject(error)
     //   })
     // })
+
     removeToken()
     removeRole()
     resetRouter()
     commit('RESET_STATE')
-    commit('SET_TOKEN', [])
-    commit('SET_ROLES', [])
+    // commit('SET_TOKEN', '')
+    // commit('SET_ROLES', '')
+    // commit('SET_ROLESNAME', '')
   },
 
   // remove token
   resetToken({ commit }) {
     return new Promise(resolve => {
       removeToken() // must remove  token  first
+      removeRole()
       commit('RESET_STATE')
-      commit('SET_ROLES', [])
+      commit('SET_ROLES', '')
+      commit('SET_ROLESNAME', '')
       resolve()
     })
   },

@@ -5,6 +5,8 @@
     <breadcrumb class="breadcrumb-container" />
 
     <div class="right-menu">
+      <span>当前账号：{{name}}</span>
+      <span>账号角色：{{rolesname}}</span>
       <el-link class="logoutBtn" :underline="false" @click="logout">退出登录</el-link>
     </div>
     
@@ -25,7 +27,8 @@ export default {
     ...mapGetters([
       'sidebar',
       'avatar',
-      'name'
+      'name',
+      'rolesname'
     ])
   },
   methods: {
@@ -69,6 +72,12 @@ export default {
     float: right;
     height: 100%;
     line-height: 50px;
+
+    span{
+      font-size: 14px;
+      color: #5a5e66;
+      margin-right: 20px;
+    }
 
     .logoutBtn{
       margin-right: 30px;

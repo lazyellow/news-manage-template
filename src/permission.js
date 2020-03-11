@@ -1,69 +1,41 @@
-// import { asyncRoutes, constantRoutes } from '@/router'
+import router from './router'
+import store from './store'
+import { getToken, getRole, setRole } from '@/utils/auth'
+import { asyncRoutes, constantRoutes, getSessionRoutes } from '@/router'
 
-// /**
-//  * Use meta.role to determine if the current user has permission
-//  * @param roles
-//  * @param route
-//  */
-// function hasPermission(roles, route) {
-//   if (route.meta && route.meta.roles) {
-//     return roles.some(role => route.meta.roles.includes(role))
-//   } else {
-//     return true
-//   }
-// }
-
-// /**
-//  * Filter asynchronous routing tables by recursion
-//  * @param routes asyncRoutes
-//  * @param roles
-//  */
-// export function filterAsyncRoutes(routes, roles) {
-//   const res = []
-
-//   routes.forEach(route => {
-//     const tmp = { ...route }
-//     if (hasPermission(roles, tmp)) {
-//       if (tmp.children) {
-//         tmp.children = filterAsyncRoutes(tmp.children, roles)
-//       }
-//       res.push(tmp)
-//     }
-//   })
-
-//   return res
-// }
-
-// const state = {
-//   routes: [],
-//   addRoutes: []
-// }
-
-// const mutations = {
-//   SET_ROUTES: (state, routes) => {
-//     state.addRoutes = routes
-//     state.routes = constantRoutes.concat(routes)
-//   }
-// }
-
-// const actions = {
-//   generateRoutes({ commit }, roles) {
-//     return new Promise(resolve => {
-//       let accessedRoutes
-//       if (roles.includes('admin')) {
-//         accessedRoutes = asyncRoutes || []
-//       } else {
-//         accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
-//       }
-//       commit('SET_ROUTES', accessedRoutes)
-//       resolve(accessedRoutes)
-//     })
-//   }
-// }
-
-// export default {
-//   namespaced: true,
-//   state,
-//   mutations,
-//   actions
-// }
+const whiteList = ['/login', '/404'] // no redirect whitelist
+router.beforeEach(async (to, from, next) => {
+  if (store.getters.token) {  //store里有token
+    if (to.path === '/login') {
+      next({ path: '/' });
+    } else {
+      if (store.getters.roles.length === 0) { //还没有用户权限信息
+        console.log('----2.拿到token后，获取用户权限信息----')
+        console.log('store里的token：' + store.getters.token)
+        console.log('cookies里的token：' + getToken())
+        await store.dispatch('user/getInfo')
+        console.log('store里的roles' + store.getters.roles)
+        console.log('cookies里的role' + getRole())
+        console.log('---3.加载动态路由---')
+        const accessRoutes = await store.dispatch('permission/generateRoutes', store.getters.roles)
+        router.addRoutes(accessRoutes)
+        router.options.routes = store.getters.permission_routes
+        // router.options.routes = getSessionRoutes('accessedRoutes')
+        next({ ...to, replace: true })
+      } else {  //已经获取了用户权限，生成了动态路由表
+        next()
+      }
+    }
+  } else {  //store里无token
+    if (getToken()) {  // Cookies里有token,已登录状态
+      store.commit('user/SET_TOKEN', getToken())
+      next()
+    } else {  // Cookies里无token，未登录状态
+      if (whiteList.indexOf(to.path) !== -1) {
+        next()
+      } else {
+        next(`/login?redirect=${to.path}`)
+      }
+    }
+  }
+})

@@ -56,11 +56,6 @@
         style="width:100%;margin-bottom:30px;"
         @click.native.prevent="handleLogin"
       >登录</el-button>
-
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span>password: any</span>
-      </div>
     </el-form>
   </div>
 </template>
@@ -127,23 +122,23 @@ export default {
     },
     // 点击登陆
     handleLogin() {
-      this.$store
-        .dispatch("user/tologin", this.loginForm)
-        .then(res => {
-          if (res.data.code === 200) {
-            this.$router.push({ path: this.redirect || "/dashboard" }); //重定向到首页
-            this.loading = false;
-            this.$message({
-              message: "登陆成功!",
-              type: "success"
-            });
-          } else if (res.data.code === 400) {
-            this.$router.push({ path: "/login" }); //重定向到login，重新登陆
-            this.$message({
-              message: "用户名或密码错误!"
-            });
-          }
-        })
+      this.$store.dispatch("user/tologin", this.loginForm).then(res => {
+        if (res.data.code === 200) {
+          this.$router.push({ path: this.redirect || "/dashboard" }); //重定向到首页
+          this.loading = false;
+          this.$message({
+            message: "登陆成功!",
+            type: "success"
+          });
+          console.log(store.getters.roles)
+          console.log(store.getters.rolesname)
+        } else if (res.data.code === 400) {
+          this.$router.push({ path: "/login" }); //重定向到login，重新登陆
+          this.$message({
+            message: "用户名或密码错误!"
+          });
+        }
+      });
     }
   }
 };
