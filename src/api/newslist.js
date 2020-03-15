@@ -22,6 +22,7 @@ export function getCategoryNews(cid) {
 
 // 搜索新闻
 export async function searchNews(nid) {
+    console.log('api'+nid)
     const result = await axios.get("http://47.101.150.127:3030/news/getNewsDetail?nid=" + nid)
     return result
 }

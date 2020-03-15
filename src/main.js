@@ -39,7 +39,6 @@ import { getToken } from '@/utils/auth'
 Vue.prototype.$http = axios
 Vue.config.productionTip = false
 // axios.defaults.headers.common['authorizatior'] = getToken()
-console.log('----设置authorizatior----' + store.getters.token)
 // axios.defaults.headers.common['authorizatior'] = store.getters.token
 
 Vue.config.productionTip = false
@@ -55,15 +54,9 @@ router.beforeEach(async (to, from, next) => {
       next({ path: '/' });
     } else {
       if (store.getters.roles.length === 0) { //还没有用户权限信息
-        console.log('----2.拿到token后，获取用户权限信息----')
-        console.log('store里的token：' + store.getters.token)
-        console.log('cookies里的token：' + getToken())
         axios.defaults.headers.common['authorizatior'] = store.getters.token
         await store.dispatch('user/getInfo')
-        console.log('store里的roles' + store.getters.roles)
-        console.log('cookies里的role' + getRole())
-        console.log('---3.加载动态路由---')
-        const accessRoutes = await store.dispatch('permission/generateRoutes', store.getters.roles)
+        const accessRoutes = await store.dispatch('permission/generateRoutes', getRole())
         router.addRoutes(accessRoutes)
         router.options.routes = store.getters.permission_routes
         next({ ...to, replace: true })

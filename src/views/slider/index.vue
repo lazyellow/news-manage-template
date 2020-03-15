@@ -2,13 +2,19 @@
   <div>
     <el-button class="add" icon="el-icon-plus" @click="dialogAddVisible = true">添加轮播图</el-button>
     <!-- 编辑弹窗 -->
-    <el-dialog title="添加" :visible.sync="dialogAddVisible">
+    <el-dialog
+      title="添加"
+      :visible.sync="dialogAddVisible"
+      :close-on-click-modal="false"
+      @close="closeAddDialog()"
+    >
       <el-form :model="add_form">
         <el-form-item label="对应新闻ID">
           <el-input v-model="add_form.news_id"></el-input>
         </el-form-item>
         <el-form-item label="图片">
           <el-upload
+            ref="clear"
             action
             accept="image/jpeg, image/gif, image/png"
             list-type="picture-card"
@@ -22,7 +28,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button @click="dialogCancelCommit()">取 消</el-button>
         <el-button type="primary" @click="dialogAddCommit()">确 定</el-button>
       </div>
     </el-dialog>
@@ -58,7 +64,10 @@
               <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
               <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
               <!-- 编辑弹窗 -->
-              <el-dialog title="修改" :visible.sync="dialogFormVisible">
+              <el-dialog title="修改" 
+                :visible.sync="dialogFormVisible"
+                :close-on-click-modal="false"
+                >
                 <el-form :model="edit_form">
                   <el-form-item label="对应新闻ID">
                     <el-input v-model="edit_form.news_id"></el-input>
@@ -104,7 +113,7 @@ export default {
       // imgList: [],
       add_form: {
         news_id: "",
-        img: "",
+        img: ""
       },
       edit_form: {
         sid: "",
@@ -149,35 +158,70 @@ export default {
       }
     },
 
+    //添加弹窗-取消按钮
+    async dialogCancelCommit() {
+      this.add_form.news_id = "",
+      this.add_form.img = "",
+      this.fileImg = "",
+      this.$refs.clear.clearFiles();
+      this.dialogAddVisible = false;
+    },
+
+    //添加弹窗-右上关闭按钮
+    closeAddDialog() {
+      this.add_form.news_id = "",
+      this.add_form.img = "",
+      this.fileImg = "",
+      this.$refs.clear.clearFiles();
+    },
+
     //添加弹窗
     async dialogAddCommit() {
-      const imgUrl = await this.submitUpload(this.fileImg);
-      if (imgUrl.data.code === 200) {
-        this.add_form.img = imgUrl.data.success;
+      if (this.fileImg === "" || this.add_form.news_id === "") {
+        if (this.fileImg === "") {
+          this.$message({
+            message: "请添加轮播图",
+            type: "warning"
+          });
+        } else if (this.add_form.news_id === "") {
+          this.$message({
+            message: "请添加轮播图对应的新闻ID",
+            type: "warning"
+          });
+        }
       } else {
-        console.log(imgUrl);
-      }
-      const result = await addSlider(this.add_form)
-      this.dialogAddVisible = false
-      if (result.data.code === 200) {
-        this.$message({
-          message: "修改成功",
-          type: "success"
-        });
-        getSlider().then(res => {
-          if (res.data.code === 200) {
-            // 初始化表格的数据
-            this.sliderList = res.data.data;
-          } else {
-            console.log(res);
-          }
-        });
-      } else {
-        this.$message({
-          message: "修改失败",
-          type: "warning"
-        });
-        console.log(result);
+        const imgUrl = await this.submitUpload(this.fileImg);
+        if (imgUrl.data.code === 200) {
+          this.add_form.img = imgUrl.data.success;
+        } else {
+          console.log(imgUrl);
+        }
+        const result = await addSlider(this.add_form);
+        (this.add_form.news_id = ""),
+          (this.add_form.img = ""),
+          (this.fileImg = ""),
+          this.$refs.clear.clearFiles();
+        this.dialogAddVisible = false;
+        if (result.data.code === 200) {
+          this.$message({
+            message: "修改成功",
+            type: "success"
+          });
+          getSlider().then(res => {
+            if (res.data.code === 200) {
+              // 初始化表格的数据
+              this.sliderList = res.data.data;
+            } else {
+              console.log(res);
+            }
+          });
+        } else {
+          this.$message({
+            message: "修改失败",
+            type: "warning"
+          });
+          console.log(result);
+        }
       }
     },
 
@@ -204,34 +248,41 @@ export default {
 
     //提交修改
     async dialogEditCommit() {
-      const imgUrl = await this.submitUpload(this.fileImg);
-      if (imgUrl.data.code === 200) {
-        this.edit_form.img = imgUrl.data.success;
-      } else {
-        console.log(imgUrl);
-      }
-      this.$delete(this.edit_form, "fileImg");
-      const result = await updateSlider(this.edit_form);
-      this.dialogFormVisible = false;
-      if (result.data.code === 200) {
+      if(this.edit_form.news_id === ''){
         this.$message({
-          message: "修改成功",
-          type: "success"
-        });
-        getSlider().then(res => {
-          if (res.data.code === 200) {
-            // 初始化表格的数据
-            this.sliderList = res.data.data;
-          } else {
-            console.log(res);
-          }
-        });
-      } else {
-        this.$message({
-          message: "修改失败",
-          type: "warning"
-        });
-        console.log(result);
+            message: "请输入对应新闻ID",
+            type: "warning"
+          });
+      }else{
+        const imgUrl = await this.submitUpload(this.fileImg);
+        if (imgUrl.data.code === 200) {
+          this.edit_form.img = imgUrl.data.success;
+        } else {
+          console.log(imgUrl);
+        }
+        this.$delete(this.edit_form, "fileImg");
+        const result = await updateSlider(this.edit_form);
+        this.dialogFormVisible = false;
+        if (result.data.code === 200) {
+          this.$message({
+            message: "修改成功",
+            type: "success"
+          });
+          getSlider().then(res => {
+            if (res.data.code === 200) {
+              // 初始化表格的数据
+              this.sliderList = res.data.data;
+            } else {
+              console.log(res);
+            }
+          });
+        } else {
+          this.$message({
+            message: "修改失败",
+            type: "warning"
+          });
+          console.log(result);
+        }
       }
     },
 

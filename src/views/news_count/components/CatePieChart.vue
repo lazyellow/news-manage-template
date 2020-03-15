@@ -1,5 +1,5 @@
 <template>
-  <div :class="className" :style="{height:height,width:width}" />
+  <div v-if="true" :class="className" :style="{height:height,width:width}" />
 </template>
 
 <script>
@@ -28,7 +28,6 @@ export default {
   data() {
     return {
       chart: null,
-      count: 0,
       option: {
         tooltip: {
           trigger: "item",
@@ -58,14 +57,10 @@ export default {
         // 获取不同类型的新闻数量
         getCategoryNews(item.category_id).then(res => {
           this.option.legend.data.push(res.data.data[0].Category.category_name);
-          for (let item of res.data.data) {
-            this.count += item.read_amount;
-          }
           this.option.series.data.push({
-            value: this.count,
+            value: res.data.data.length,
             name: res.data.data[0].Category.category_name
           });
-          this.count = 0;
         });
       }
       this.initChart();
@@ -86,7 +81,7 @@ export default {
   methods: {
     initChart() {
       this.chart = echarts.init(this.$el, "macarons");
-      this.chart.setOption();
+      this.chart.setOption(this.option);
     }
   },
   watch: {

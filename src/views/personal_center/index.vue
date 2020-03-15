@@ -156,21 +156,23 @@ export default {
       },
       roleData: [],
       rules: {
-        pass: [{ required: true, validator: validatePass, trigger: "blur" }],
+        user_pwd: [
+          { required: true, validator: validatePass, trigger: "blur" }
+        ],
         checkPass: [
           { required: true, validator: validatePass2, trigger: "blur" }
         ],
-        name: [
+        userinfo_name: [
           { required: true, message: "请输入姓名", trigger: "blur" },
           {
             min: 2,
             max: 10,
-            message: "长度在 2 到 10 个字符",
+            message: "长度在 2 到 5 个字符",
             trigger: "blur"
           },
           {
             required: true,
-            pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9.·-]+$/,
+            pattern: /^[\u2E80-\u9FFF]+$/,
             message: "姓名不支持特殊字符",
             trigger: "blur"
           }
@@ -187,7 +189,7 @@ export default {
             message: "长度在 5 到 10 个字符"
           }
         ],
-        phone: [
+        userinfo_phone: [
           {
             required: true,
             message: "请输入手机号码",
@@ -204,7 +206,7 @@ export default {
             trigger: "blur"
           }
         ],
-        email: [
+        userinfo_email: [
           { required: true, message: "请输入邮箱地址", trigger: "blur" },
           {
             type: "email",
@@ -221,16 +223,18 @@ export default {
     // 个人信息数据初始化
     let token = getToken();
     getPersonalInfo(token).then(res => {
-        this.updateForm.user_id = res.data.data.user_id,
-        this.updateForm.account = res.data.data.account,
-        this.updateForm.role_id = res.data.data.role_id,
-        this.updateForm.user_pwd = res.data.data.user_pwd,
-        this.updateForm.checkPass = res.data.data.user_pwd,
-        this.updateForm.userinfo_id = res.data.data.Userinfo_id,
-        this.updateForm.userinfo_name = res.data.data.UserInfo.userinfo_name,
-        this.updateForm.userinfo_sex = res.data.data.UserInfo.userinfo_sex,
-        this.updateForm.userinfo_phone = res.data.data.UserInfo.userinfo_phone,
-        this.updateForm.userinfo_email = res.data.data.UserInfo.userinfo_email
+      (this.updateForm.user_id = res.data.data.user_id),
+        (this.updateForm.account = res.data.data.account),
+        (this.updateForm.role_id = res.data.data.role_id),
+        (this.updateForm.user_pwd = res.data.data.user_pwd),
+        (this.updateForm.checkPass = res.data.data.user_pwd),
+        (this.updateForm.userinfo_id = res.data.data.Userinfo_id),
+        (this.updateForm.userinfo_name = res.data.data.UserInfo.userinfo_name),
+        (this.updateForm.userinfo_sex = res.data.data.UserInfo.userinfo_sex),
+        (this.updateForm.userinfo_phone =
+          res.data.data.UserInfo.userinfo_phone),
+        (this.updateForm.userinfo_email =
+          res.data.data.UserInfo.userinfo_email);
     });
 
     // 角色列表数据初始化
@@ -270,51 +274,104 @@ export default {
     },
     // 修改
     async submitForm() {
-      //   用户角色信息提交数据
-      this.updateUserRoleForm.user_id = this.updateForm.user_id;
-      this.updateUserRoleForm.account = this.updateForm.account;
-      this.updateUserRoleForm.user_pwd = this.updateForm.user_pwd;
-      this.updateUserRoleForm.role_id = this.updateForm.role_id;
-
-      // 用户基本信息提交数据
-      this.updateUserInfoForm.userinfo_id = this.updateForm.userinfo_id;
-      this.updateUserInfoForm.userinfo_name = this.updateForm.userinfo_name;
-      this.updateUserInfoForm.userinfo_sex = this.updateForm.userinfo_sex;
-      this.updateUserInfoForm.userinfo_phone = this.updateForm.userinfo_phone;
-      this.updateUserInfoForm.userinfo_email = this.updateForm.userinfo_email;
-      
-      const resultUserInfo = await updateUserInfo(this.updateUserInfoForm);
-      const resultUserRole = await updateUserRole(this.updateUserRoleForm);
-      if (resultUserInfo.data.code === 200 && resultUserRole.data.code === 200) {
-        this.$message({
-          message: "修改成功",
-          type: "success"
-        });
-        // 数据重新初始化
-        getPersonalInfo(token).then(res => {
-            this.updateForm.user_id = res.data.data.user_id,
-            this.updateForm.userinfo_name = res.data.data.UserInfo.userinfo_name,
-            this.updateForm.account = res.data.data.account,
-            this.updateForm.role_id = res.data.data.role_id,
-            this.updateForm.user_pwd = res.data.data.user_pwd,
-            this.updateForm.checkPass = res.data.data.user_pwd,
-            this.updateForm.userinfo_sex = res.data.data.UserInfo.userinfo_sex,
-            this.updateForm.userinfo_phone = res.data.data.UserInfo.userinfo_phone,
-            this.updateForm.userinfo_email = res.data.data.UserInfo.userinfo_email
-        });
+      if (
+        this.updateForm.userinfo_name === "" ||
+        this.updateForm.account === "" ||
+        this.updateForm.user_pwd === "" ||
+        this.updateForm.checkPass === "" ||
+        this.updateForm.userinfo_phone === "" ||
+        this.updateForm.userinfo_email === ""
+      ) {
+        if (this.updateForm.userinfo_name === "") {
+          this.$message({
+            message: "请输入姓名！",
+            type: "warning"
+          });
+        } else if (this.updateForm.account === "") {
+          this.$message({
+            message: "请输入账号！",
+            type: "warning"
+          });
+        } else if (this.updateForm.user_pwd === "") {
+          this.$message({
+            message: "请输入密码！",
+            type: "warning"
+          });
+        } else if (this.updateForm.checkPass === "") {
+          this.$message({
+            message: "请输入再次密码！",
+            type: "warning"
+          });
+        } else if (this.updateForm.userinfo_phone === "") {
+          this.$message({
+            message: "请输入电话号码！",
+            type: "warning"
+          });
+        } else if (this.updateForm.userinfo_email === "") {
+          this.$message({
+            message: "请输入电子邮箱！",
+            type: "warning"
+          });
+        }
       } else {
-        this.$message({
-          message: "修改失败",
-          type: "warning"
-        });
-        console.log(resultUserInfo)
-        console.log(resultUserRole)
+        //   用户角色信息提交数据
+        this.updateUserRoleForm.user_id = this.updateForm.user_id;
+        this.updateUserRoleForm.account = this.updateForm.account;
+        this.updateUserRoleForm.user_pwd = this.updateForm.user_pwd;
+        this.updateUserRoleForm.role_id = this.updateForm.role_id;
+
+        // 用户基本信息提交数据
+        this.updateUserInfoForm.userinfo_id = this.updateForm.userinfo_id;
+        this.updateUserInfoForm.userinfo_name = this.updateForm.userinfo_name;
+        this.updateUserInfoForm.userinfo_sex = this.updateForm.userinfo_sex;
+        this.updateUserInfoForm.userinfo_phone = this.updateForm.userinfo_phone;
+        this.updateUserInfoForm.userinfo_email = this.updateForm.userinfo_email;
+
+        const resultUserInfo = await updateUserInfo(this.updateUserInfoForm);
+        const resultUserRole = await updateUserRole(this.updateUserRoleForm);
+        if (
+          resultUserInfo.data.code === 200 &&
+          resultUserRole.data.code === 200
+        ) {
+          this.$message({
+            message: "修改成功",
+            type: "success"
+          });
+          // 数据重新初始化
+          getPersonalInfo(token).then(res => {
+            (this.updateForm.user_id = res.data.data.user_id),
+              (this.updateForm.userinfo_name =
+                res.data.data.UserInfo.userinfo_name),
+              (this.updateForm.account = res.data.data.account),
+              (this.updateForm.role_id = res.data.data.role_id),
+              (this.updateForm.user_pwd = res.data.data.user_pwd),
+              (this.updateForm.checkPass = res.data.data.user_pwd),
+              (this.updateForm.userinfo_sex =
+                res.data.data.UserInfo.userinfo_sex),
+              (this.updateForm.userinfo_phone =
+                res.data.data.UserInfo.userinfo_phone),
+              (this.updateForm.userinfo_email =
+                res.data.data.UserInfo.userinfo_email);
+          });
+        } else {
+          this.$message({
+            message: "修改失败",
+            type: "warning"
+          });
+          console.log(resultUserInfo);
+          console.log(resultUserRole);
+        }
       }
-    },
+    }
   }
 };
 </script>
 <style lang="scss" scoped>
+.app-container {
+  margin-top: 40px;
+  margin-left: 60px;
+}
+
 .show-pwd {
   position: absolute;
   left: 130px;

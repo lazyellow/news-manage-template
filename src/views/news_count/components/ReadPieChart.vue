@@ -12,14 +12,6 @@ import { getCategoryNews } from "@/api/newslist";
 export default {
   mixins: [resize],
   props: {
-    cnameList: {
-      type: Array,
-      required: true
-    },
-    ccountList: {
-      type: Array,
-      required: true
-    },
     className: {
       type: String,
       default: "chart"
@@ -36,32 +28,47 @@ export default {
   data() {
     return {
       chart: null,
-      rnameList: [],
-      rcountList: [],
-      count: 0
+      count: 0,
+      option: {
+        tooltip: {
+          trigger: "item",
+          formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+          left: "center",
+          bottom: "10",
+          data: []
+        },
+        series: {
+          name: "各类型新闻数量",
+          type: "pie",
+          roseType: "radius",
+          radius: [15, 95],
+          center: ["50%", "38%"],
+          data: [],
+          animationEasing: "cubicInOut",
+          animationDuration: 2600
+        }
+      }
     };
   },
   created() {
     getCategory().then(result => {
-      for (let item in result.data.data) {
-        let i = result.data.data[item];
+      for (let item of result.data.data) {
         // 获取不同类型的新闻数量
-        getCategoryNews(i.category_id).then(res => {
-          // console.log(res.data.data);
-          this.rnameList.push(res.data.data[0].Category.category_name);
-          for (let item in res.data.data) {
-            // console.log(item);
-            this.count += res.data.data[item].read_amount;
+        getCategoryNews(item.category_id).then(res => {
+          this.option.legend.data.push(res.data.data[0].Category.category_name);
+          for (let item of res.data.data) {
+            this.count += item.read_amount;
           }
-          this.rcountList.push({
+          this.option.series.data.push({
             value: this.count,
             name: res.data.data[0].Category.category_name
           });
-          this.count = 0
+          this.count = 0;
         });
       }
-      // console.log(this.rnameList);
-      // console.log(this.rcountList);
+      this.initChart();
     });
   },
   mounted() {
@@ -79,29 +86,20 @@ export default {
   methods: {
     initChart() {
       this.chart = echarts.init(this.$el, "macarons");
-      this.chart.setOption({
-        tooltip: {
-          trigger: "item",
-          formatter: "{a} <br/>{b} : {c} ({d}%)"
-        },
-        legend: {
-          left: "center",
-          bottom: "10",
-          data: this.rnameList
-        },
-        series: [
-          {
-            name: "各类型新闻数量",
-            type: "pie",
-            roseType: "radius",
-            radius: [15, 95],
-            center: ["50%", "38%"],
-            data: this.rcountList,
-            animationEasing: "cubicInOut",
-            animationDuration: 2600
-          }
-        ]
-      });
+      this.chart.setOption();
+    }
+  },
+  watch: {
+    option: {
+      deep: true,
+      handler: function(newVal, oldVal) {
+        if (newVal) {
+          this.chart.setOption(newVal, true);
+        } else {
+          this.chart.setOption(oldVal, true);
+        }
+        this.chart.resize();
+      }
     }
   }
 };

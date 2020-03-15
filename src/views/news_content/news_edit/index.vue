@@ -1,12 +1,12 @@
 <template>
   <div class="app-container">
-    <el-form label-width="100px">
-      <el-form-item label="新闻标题">
+    <el-form label-width="100px" :rules="formRules">
+      <el-form-item label="新闻标题" prop="news_title">
         <el-col :span="12">
           <el-input v-model="form.news_title" />
         </el-col>
       </el-form-item>
-      <el-form-item label="新闻副标题">
+      <el-form-item label="新闻副标题" prop="news_subtitle">
         <el-col :span="12">
           <el-input v-model="form.news_subtitle" type="textarea" />
         </el-col>
@@ -43,17 +43,17 @@
         ></el-date-picker>
       </el-form-item>
       <!-- 新闻人员信息 -->
-      <el-form-item label="新闻记者">
+      <el-form-item label="新闻记者" prop="news_reporter">
         <el-col :span="3">
           <el-input v-model="form.news_reporter" />
         </el-col>
       </el-form-item>
-      <el-form-item label="编辑人员">
+      <el-form-item label="编辑人员" prop="news_editor">
         <el-col :span="3">
           <el-input v-model="form.news_editor" />
         </el-col>
       </el-form-item>
-      <el-form-item label="审核人员">
+      <el-form-item label="审核人员" prop="news_reviewer">
         <el-col :span="3">
           <el-input v-model="form.news_reviewer" />
         </el-col>
@@ -74,8 +74,17 @@
         <el-button @click="onClear">清空</el-button>
       </el-form-item>
     </el-form>
-    <!-- 查看弹窗 -->
+    <!-- 预览弹窗 -->
     <el-dialog :visible.sync="dialogNewsVisible">
+      <div class="news-title">{{form.news_title}}</div>
+      <div class="news-message">
+        <span>新闻记者：{{form.news_reporter}}</span>
+        <span>编辑人员：{{form.news_editor}}</span>
+        <span>审核人员：{{form.news_reviewer}}</span>
+        <span>发布时间：{{form.news_time}}</span>
+        <span>修改时间：</span>
+        <span>阅读量：</span>
+      </div>
       <div v-html="form.news_content" />
     </el-dialog>
   </div>
@@ -92,6 +101,96 @@ export default {
   components: { Tinymce },
   data() {
     return {
+      formRules: {
+        news_title: [
+          {
+            required: true,
+            trigger: "blur",
+            message: "请输入新闻标题"
+          },
+          {
+            min: 5,
+            max: 20,
+            message: "新闻标题长度在5-20个字符"
+          }
+        ],
+        news_subtitle: [
+          {
+            required: true,
+            trigger: "blur",
+            message: "请输入新闻副标题"
+          },
+          {
+            min: 5,
+            max: 50,
+            message: "新闻副标题长度在5-50个字符"
+          }
+        ],
+        news_reporter: [
+          {
+            required: true,
+            message: "请输入姓名",
+            trigger: "blur"
+          },
+          {
+            min: 2,
+            max: 10,
+            message: "长度在 2 到 5 个字符",
+            trigger: "blur"
+          },
+          {
+            required: true,
+            pattern: /^[\u2E80-\u9FFF]+$/,
+            message: "姓名不支持特殊字符",
+            trigger: "blur"
+          }
+        ],
+        news_editor: [
+          {
+            required: true,
+            message: "请输入姓名",
+            trigger: "blur"
+          },
+          {
+            min: 2,
+            max: 10,
+            message: "长度在 2 到 5 个字符",
+            trigger: "blur"
+          },
+          {
+            required: true,
+            pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9.·-]+$/,
+            message: "姓名不支持特殊字符",
+            trigger: "blur"
+          }
+        ],
+        news_reviewer: [
+          {
+            required: true,
+            message: "请输入姓名",
+            trigger: "blur"
+          },
+          {
+            min: 2,
+            max: 10,
+            message: "长度在 2 到 5 个字符",
+            trigger: "blur"
+          },
+          {
+            required: true,
+            pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9.·-]+$/,
+            message: "姓名不支持特殊字符",
+            trigger: "blur"
+          }
+        ],
+        news_content: [
+          {
+            required: true,
+            message: "请输入新闻正文内容",
+            trigger: "blur"
+          }
+        ]
+      },
       categoryList: [],
       form: {
         news_id: "",
@@ -156,31 +255,90 @@ export default {
 
     // 提交
     async onSubmit() {
-      console.log(this.fileImg.length);
-      const imgUrl = await this.submitUpload(this.fileImg);
-      if (imgUrl.data.code === 200) {
-        this.form.news_source = imgUrl.data.success;
-      }
-      if (this.setHot === true) {
-        this.form.hot_status = 2;
-      } else if (this.setHot === false && this.initHot === 2) {
-        this.form.hot_status = 0;
-      }
-      const result = await updateNews(this.form);
-      if (result.data.code === 200) {
-        this.$message({
-          message: "修改成功！",
-          type: "success"
-        });
-        this.$router.push({
-          name: "news_list"
-        });
+      if (
+        this.form.news_title === "" ||
+        this.form.news_subtitle === "" ||
+        this.form.category_id === "" ||
+        this.fileImg === null ||
+        this.form.news_time === "" ||
+        this.form.news_reporter === "" ||
+        this.form.news_editor === "" ||
+        this.form.news_reviewer === "" ||
+        this.form.news_content === ""
+      ) {
+        if (this.form.news_title === "") {
+          this.$message({
+            message: "请输入新闻标题！",
+            type: "warning"
+          });
+        } else if (this.form.news_subtitle === "") {
+          this.$message({
+            message: "请输入新闻副标题！",
+            type: "warning"
+          });
+        } else if (this.form.category_id === "") {
+          this.$message({
+            message: "请选择新闻分类！",
+            type: "warning"
+          });
+        } else if (this.fileImg === null) {
+          this.$message({
+            message: "请上传新闻封面！",
+            type: "warning"
+          });
+        } else if (this.form.news_time === "") {
+          this.$message({
+            message: "请选择新闻时间！",
+            type: "warning"
+          });
+        } else if (this.form.news_reporter === "") {
+          this.$message({
+            message: "请输入新闻记者姓名！",
+            type: "warning"
+          });
+        } else if (this.form.news_editor === "") {
+          this.$message({
+            message: "请输入编辑人员姓名！",
+            type: "warning"
+          });
+        } else if (this.form.news_reviewer === "") {
+          this.$message({
+            message: "请输入审核人员姓名！",
+            type: "warning"
+          });
+        } else if (this.form.news_content === "") {
+          this.$message({
+            message: "请输入正文内容！",
+            type: "warning"
+          });
+        }
       } else {
-        this.$message({
-          message: "修改失败！",
-          type: "warning"
-        });
-        console.log(result);
+        console.log(this.fileImg.length);
+        const imgUrl = await this.submitUpload(this.fileImg);
+        if (imgUrl.data.code === 200) {
+          this.form.news_source = imgUrl.data.success;
+        }
+        if (this.setHot === true) {
+          this.form.hot_status = 2;
+        } else if (this.setHot === false && this.initHot === 2) {
+          this.form.hot_status = 0;
+        }
+        const result = await updateNews(this.form);
+        if (result.data.code === 200) {
+          this.$message({
+            message: "修改成功！",
+            type: "success"
+          });
+          this.$router.push({
+            name: "news_list"
+          });
+        } else {
+          this.$message({
+            message: "修改失败！",
+            type: "warning"
+          });
+          console.log(result);
+        }
       }
     },
 
@@ -188,7 +346,7 @@ export default {
     onClear() {
       (this.form.news_title = ""),
         (this.form.news_subtitle = ""),
-        (this.form.category = ""),
+        (this.form.category_id = ""),
         (this.form.news_reporter = ""),
         (this.form.news_editor = ""),
         (this.form.news_reviewer = ""),
@@ -198,7 +356,6 @@ export default {
         message: "已清空!",
         type: "success"
       });
-      console.log(this.form);
     }
   }
 };

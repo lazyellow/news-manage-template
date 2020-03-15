@@ -129,21 +129,23 @@ export default {
       },
       roleData: [],
       rules: {
-        pass: [{ required: true, validator: validatePass, trigger: "blur" }],
+        user_pwd: [
+          { required: true, validator: validatePass, trigger: "blur" }
+        ],
         checkPass: [
           { required: true, validator: validatePass2, trigger: "blur" }
         ],
-        name: [
+        userinfo_name: [
           { required: true, message: "请输入姓名", trigger: "blur" },
           {
             min: 2,
             max: 10,
-            message: "长度在 2 到 10 个字符",
+            message: "长度在 2 到 5 个字符",
             trigger: "blur"
           },
           {
             required: true,
-            pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9.·-]+$/,
+            pattern: /^[\u2E80-\u9FFF]+$/,
             message: "姓名不支持特殊字符",
             trigger: "blur"
           }
@@ -160,7 +162,7 @@ export default {
             message: "长度在 5 到 10 个字符"
           }
         ],
-        phone: [
+        userinfo_phone: [
           {
             required: true,
             message: "请输入手机号码",
@@ -177,7 +179,7 @@ export default {
             trigger: "blur"
           }
         ],
-        email: [
+        userinfo_email: [
           { required: true, message: "请输入邮箱地址", trigger: "blur" },
           {
             type: "email",
@@ -207,23 +209,77 @@ export default {
   methods: {
     // 添加
     async submitForm() {
-      this.$delete(this.ruleForm, "checkPass");
-      const result = await addUser(this.ruleForm);
-      if (result.data.code === 200) {
-        this.$message({
-          message: "添加成功!",
-          type: "success"
-        });
-        // 跳转到用户角色列表
-        this.$router.push({
-          name: "user_account"
-        });
+      if (
+        this.ruleForm.userinfo_name === "" ||
+        this.ruleForm.account === "" ||
+        this.ruleForm.role_id === "" ||
+        this.ruleForm.user_pwd === "" ||
+        this.ruleForm.user_pwd === "" ||
+        this.ruleForm.checkPass === "" ||
+        this.ruleForm.userinfo_sex === "" ||
+        this.ruleForm.userinfo_phone === "" ||
+        this.ruleForm.userinfo_email === ""
+      ) {
+        if (this.ruleForm.userinfo_name === "") {
+          this.$message({
+            message: "请输入姓名!",
+            type: "warning"
+          });
+        } else if (this.ruleForm.account === "") {
+          this.$message({
+            message: "请输入账号!",
+            type: "warning"
+          });
+        } else if (this.ruleForm.role_id === "") {
+          this.$message({
+            message: "请选择账号角色!",
+            type: "warning"
+          });
+        } else if (this.ruleForm.user_pwd === "") {
+          this.$message({
+            message: "请输入密码!",
+            type: "warning"
+          });
+        } else if (this.ruleForm.checkPass === "") {
+          this.$message({
+            message: "请输入再次密码!",
+            type: "warning"
+          });
+        } else if (this.ruleForm.userinfo_sex === "") {
+          this.$message({
+            message: "请选择用户性别!",
+            type: "warning"
+          });
+        } else if (this.ruleForm.userinfo_phone === "") {
+          this.$message({
+            message: "请输入用户电话!",
+            type: "warning"
+          });
+        } else if (this.ruleForm.userinfo_email === "") {
+          this.$message({
+            message: "请输入电子邮箱!",
+            type: "warning"
+          });
+        }
       } else {
-        console.log(result);
-        this.$message({
-          message: "添加失败!",
-          type: "warning"
-        });
+        this.$delete(this.ruleForm, "checkPass");
+        const result = await addUser(this.ruleForm);
+        if (result.data.code === 200) {
+          this.$message({
+            message: "添加成功!",
+            type: "success"
+          });
+          // 跳转到用户角色列表
+          this.$router.push({
+            name: "user_account"
+          });
+        } else {
+          console.log(result);
+          this.$message({
+            message: "添加失败!",
+            type: "warning"
+          });
+        }
       }
     },
 

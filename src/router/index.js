@@ -40,7 +40,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: '新闻统计', icon: 'dashboard' }
+      meta: { title: '欢迎回来', icon: 'people' }
     }]
   },
 
@@ -54,141 +54,7 @@ export const constantRoutes = [
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true
-  },
-
-  // {
-  //   path: '/news_count',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'news_count',
-  //       component: () => import('@/views/news_count/index'),
-  //       meta: { title: '新闻统计', icon: 'dashboard' }
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: '/slider',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'slider',
-  //       component: () => import('@/views/slider/index'),
-  //       meta: { title: '轮播图管理', icon: 'nested' }
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: '/news_category',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'news_category',
-  //       component: () => import('@/views/news_category/index'),
-  //       meta: { title: '新闻分类管理', icon: 'nested' }
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: '/news_content',
-  //   component: Layout,
-  //   redirect: '/news_content/news_list',
-  //   name: 'news_list',
-  //   meta: {
-  //     title: '新闻内容管理',
-  //     icon: 'example'
-  //   },
-  //   children: [
-  //     {
-  //       path: 'news_list',
-  //       name: 'news_list',
-  //       component: () => import('@/views/news_content/news_list/index'),
-  //       meta: { title: '新闻列表', icon: 'table' }
-  //     },
-  //     {
-  //       path: 'news_add',
-  //       name: 'news_add',
-  //       component: () => import('@/views/news_content/news_add/index'),
-  //       meta: { title: '发布新闻', icon: 'form' }
-  //     },
-  //     {
-  //       path: 'news_edit/:newsMessage',
-  //       name: 'news_edit',
-  //       component: () => import('@/views/news_content/news_edit/index')
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: '/news_hot',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'news_hot',
-  //       component: () => import('@/views/news_hot/index'),
-  //       meta: {
-  //         title: '热点新闻管理',
-  //         icon: 'example'
-
-  //       }
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: '/user',
-  //   component: Layout,
-  //   redirect: '/user/user_account',
-  //   name: 'user_account',
-  //   meta: {
-  //     title: '用户账号管理',
-  //     icon: 'example'
-  //   },
-  //   children: [
-  //     {
-  //       path: 'user_add',
-  //       name: 'user_add',
-  //       component: () => import('@/views/user/user_add/index'),
-  //       meta: { title: '添加账号', icon: 'table' }
-  //     },
-  //     {
-  //       path: 'user_account/:user_id',
-  //       name: 'user_account',
-  //       component: () => import('@/views/user/user_account/index'),
-  //       meta: { title: '账号角色管理', icon: 'table' }
-  //     },
-  //     {
-  //       path: 'user_info',
-  //       name: 'user_info',
-  //       component: () => import('@/views/user/user_info/index'),
-  //       meta: { title: '账号信息管理', icon: 'table' }
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: '/personal_center',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'personal_center',
-  //       component: () => import('@/views/personal_center/index'),
-  //       meta: {
-  //         title: '个人信息',
-  //         icon: 'example'
-
-  //       }
-  //     }
-  //   ]
-  // },
+  }
 
   // 404 page must be placed at the end !!!
   // { path: '*', redirect: '/404', hidden: true }
@@ -204,7 +70,7 @@ export const asyncRoutes = [
     component: Layout,
     meta: {
       title: '新闻统计',
-      icon: 'dashboard',
+      icon: 'chart',
       roles: ['1']
     },
     children: [
@@ -214,7 +80,7 @@ export const asyncRoutes = [
         component: () => import('@/views/news_count/index'),
         meta: {
           title: '新闻统计',
-          icon: 'dashboard',
+          icon: 'chart',
           roles: ['1']
         }
       }
@@ -236,7 +102,7 @@ export const asyncRoutes = [
         component: () => import('@/views/slider/index'),
         meta: {
           title: '轮播图管理',
-          icon: 'nested',
+          icon: 'slider',
           roles: ['1']
         }
       }
@@ -248,7 +114,7 @@ export const asyncRoutes = [
     component: Layout,
     meta: {
       title: '新闻分类管理',
-      icon: 'nested',
+      icon: 'list',
       roles: ['1']
     },
     children: [
@@ -258,7 +124,7 @@ export const asyncRoutes = [
         component: () => import('@/views/news_category/index'),
         meta: {
           title: '新闻分类管理',
-          icon: 'nested',
+          icon: 'list',
           roles: ['1']
         }
       }
@@ -272,7 +138,7 @@ export const asyncRoutes = [
     name: 'news_list',
     meta: {
       title: '新闻内容管理',
-      icon: 'example',
+      icon: 'tree-table',
       roles: ['1', '2', '3']
     },
     children: [
@@ -309,16 +175,6 @@ export const asyncRoutes = [
           roles: ['1', '2']
         }
       },
-      // {
-      //   path: 'news_add',
-      //   name: 'news_add',
-      //   component: () => import('@/views/news_content/news_add/index'),
-      //   meta: {
-      //     title: '发布新闻',
-      //     icon: 'form',
-      //     roles: ['1', '2', '3']
-      //   }
-      // },
       {
         path: 'news_edit/:newsMessage',
         name: 'news_edit',
@@ -332,7 +188,7 @@ export const asyncRoutes = [
     component: Layout,
     meta: {
       title: '热点新闻管理',
-      icon: 'example',
+      icon: 'dashboard',
       roles: ['1', '2']
     },
     children: [
@@ -342,7 +198,7 @@ export const asyncRoutes = [
         component: () => import('@/views/news_hot/index'),
         meta: {
           title: '热点新闻管理',
-          icon: 'example',
+          icon: 'dashboard',
           roles: ['1', '2']
         }
       }
@@ -356,7 +212,7 @@ export const asyncRoutes = [
     name: 'user_account',
     meta: {
       title: '用户账号管理',
-      icon: 'example',
+      icon: 'peoples',
       roles: ['1']
     },
     children: [
@@ -366,7 +222,7 @@ export const asyncRoutes = [
         component: () => import('@/views/user/user_add/index'),
         meta: {
           title: '添加账号',
-          icon: 'table',
+          icon: 'adduser',
           roles: ['1']
         }
       },
@@ -376,7 +232,7 @@ export const asyncRoutes = [
         component: () => import('@/views/user/user_account/index'),
         meta: {
           title: '账号角色管理',
-          icon: 'table',
+          icon: 'role',
           roles: ['1']
         }
       },
@@ -386,34 +242,34 @@ export const asyncRoutes = [
         component: () => import('@/views/user/user_info/index'),
         meta: {
           title: '账号信息管理',
-          icon: 'table',
+          icon: 'info',
           roles: ['1']
         }
       }
     ]
   },
 
-  // {
-  //   path: '/personal_center',
-  //   component: Layout,
-  //   meta: {
-  //     title: '个人信息',
-  //     icon: 'example',
-  //     roles: ['1', '2', '3']
-  //   },
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'personal_center',
-  //       component: () => import('@/views/personal_center/index'),
-  //       meta: {
-  //         title: '个人信息',
-  //         icon: 'example',
-  //         roles: ['1', '2', '3']
-  //       }
-  //     }
-  //   ]
-  // },
+  {
+    path: '/personal_center',
+    component: Layout,
+    meta: {
+      title: '个人信息',
+      icon: 'user',
+      roles: ['1', '2', '3']
+    },
+    children: [
+      {
+        path: 'index',
+        name: 'personal_center',
+        component: () => import('@/views/personal_center/index'),
+        meta: {
+          title: '个人信息',
+          icon: 'user',
+          roles: ['1', '2', '3']
+        }
+      }
+    ]
+  },
 
   {
     path: '*',

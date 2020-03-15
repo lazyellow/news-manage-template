@@ -10,6 +10,7 @@
       <el-col :span="23">
         <el-table
           :data="tableData.slice((currpage - 1) * pagesize, currpage * pagesize)"
+          @selection-change="handleSelectionChange"
           border
           highlight-current-row
           @current-change="handleCurrentChange"
@@ -39,8 +40,8 @@
           <el-table-column label="审核人员" prop="news_reviewer" width="150"></el-table-column>
           <el-table-column label="操作" width="300">
             <template slot-scope="scope">
-              <!-- <el-button size="mini" @click="handleLook(scope.$index, scope.row)">查看内容</el-button> -->
-              <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">查看修改</el-button>
+              <el-button size="mini" @click="handleLook(scope.$index, scope.row)">查看内容</el-button>
+              <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
               <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
               <!-- 查看弹窗 -->
               <el-dialog :visible.sync="dialogNewsVisible">
@@ -112,7 +113,8 @@ export default {
       check_amount: "",
       check_content: "",
       pagesize: 10,
-      currpage: 1
+      currpage: 1,
+      getSearchInfo: []
     };
   },
   created: function() {
@@ -136,6 +138,7 @@ export default {
   methods: {
     // 查看操作
     handleLook(index, row) {
+      this.dialogNewsVisible = true;
       this.check_title = row.news_title;
       this.check_reporter = row.news_reporter;
       this.check_editor = row.news_editor;
@@ -144,13 +147,10 @@ export default {
       this.check_update = row.news_update;
       this.check_amount = row.news_amount;
       this.check_content = row.news_content;
-      this.dialogNewsVisible = true;
     },
 
     // 编辑操作
     handleEdit(index, row) {
-      console.log('-----news:-----')
-      console.log(row)
       this.$router.push({
         name: "news_edit",
         params: { newsMessage: row }
@@ -183,6 +183,10 @@ export default {
 
     handleSizeChange(psize) {
       this.pagesize = psize;
+    },
+
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
     },
 
     // 分类筛选

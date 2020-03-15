@@ -51,21 +51,13 @@ const actions = {
       commit('SET_ROLESNAME', result.data.data.user.Role.role_name)
       commit('SET_TOKEN', result.data.data.toKen)  //存储token到vuex
       setToken(result.data.data.toKen)  //将token存储到cookie中
-      console.log("---1.登录获取token存储在store和cookies中")
-      console.log(result.data.data.toKen)
-      console.log(getToken())
-      // commit('SET_ROLES', result.data.data.user.Role.role_id.toString())
-      // setRole(result.data.data.user.Role.role_id.toString())
-      // console.log()
     }
     return result
   },
 
   // 获取用户权限信息
   async getInfo({ commit, state }) {
-    console.log('----获取用户权限接口的result------')
     const result = await getPersonalInfo(state.token)
-    console.log(result)
     commit('SET_ROLES', result.data.data.role_id.toString())
     setRole(result.data.data.role_id.toString())
     return result.data.data.role_id.toString()
@@ -89,9 +81,6 @@ const actions = {
     removeRole()
     resetRouter()
     commit('RESET_STATE')
-    // commit('SET_TOKEN', '')
-    // commit('SET_ROLES', '')
-    // commit('SET_ROLESNAME', '')
   },
 
   // remove token

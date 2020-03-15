@@ -12,14 +12,6 @@ import { getCategoryNews } from "@/api/newslist";
 export default {
   mixins: [resize],
   props: {
-    // cnameList: {
-    //   type: Array,
-    //   required: true
-    // },
-    // ccountList: {
-    //   type: Array,
-    //   required: true
-    // },
     className: {
       type: String,
       default: "chart"
@@ -36,9 +28,6 @@ export default {
   data() {
     return {
       chart: null,
-      resultData: [],
-      cnameList: [],
-      ccountList: [],
       option: {
         tooltip: {
           trigger: "item",
@@ -74,6 +63,7 @@ export default {
           });
         });
       }
+      this.initChart();
     });
   },
   mounted() {
@@ -90,9 +80,21 @@ export default {
   },
   methods: {
     initChart() {
-      console.log(this.option);
       this.chart = echarts.init(this.$el, "macarons");
       this.chart.setOption(this.option);
+    }
+  },
+  watch: {
+    option: {
+      deep: true,
+      handler: function(newVal, oldVal) {
+        if (newVal) {
+          this.chart.setOption(newVal, true);
+        } else {
+          this.chart.setOption(oldVal, true);
+        }
+        this.chart.resize();
+      }
     }
   }
 };

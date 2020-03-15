@@ -9,7 +9,7 @@
     <el-row class="table" type="flex" justify="center">
       <el-col :span="23">
         <el-table
-          :data="hotList.filter(data => !search || data.news_title.toLowerCase().includes(search.toLowerCase()))"
+          :data="tableData.slice((currpage - 1) * pagesize, currpage * pagesize)"
           border
           highlight-current-row
           @current-change="handleCurrentChange"
@@ -28,7 +28,12 @@
           <el-table-column label="阅读量" prop="read_amount" width="100"></el-table-column>
           <el-table-column label="操作" width="300">
             <template slot-scope="scope">
-              <el-button size="mini" @click="handleCheck(scope.$index, scope.row)">查看内容</el-button>
+              <el-button
+                size="mini"
+                type="success"
+                @click="handleEdit(scope.$index, scope.row)"
+              >查看修改</el-button>
+              <!-- <el-button size="mini" @click="handleCheck(scope.$index, scope.row)">查看内容</el-button> -->
               <el-button size="mini" type="info" @click="handleDelete(scope.$index, scope.row)">取消热点</el-button>
               <!-- 查看弹窗 -->
               <el-dialog :visible.sync="dialogNewsVisible">
@@ -46,6 +51,23 @@
             </template>
           </el-table-column>
         </el-table>
+
+        <!--分页-->
+        <div class="page">
+          <el-row type="flex" justify="center">
+            <el-col :span="2">
+              <el-pagination
+                center
+                background
+                layout="prev, pager, next, jumper"
+                :page-size="pagesize"
+                :total="tableData.length"
+                @current-change="handleCurrentChange"
+                @size-change="handleSizeChange"
+              ></el-pagination>
+            </el-col>
+          </el-row>
+        </div>
       </el-col>
     </el-row>
   </div>
@@ -73,7 +95,9 @@ export default {
       check_time: "",
       check_update: "",
       check_amount: "",
-      check_content: ""
+      check_content: "",
+      pagesize: 10,
+      currpage: 1
     };
   },
   created: function() {
@@ -100,7 +124,6 @@ export default {
     async handleCheck(index, row) {
       this.dialogNewsVisible = true;
       const result = await searchNews(row.news_id);
-      console.log(result);
       this.check_title = result.data.data.news_title;
       this.check_reporter = result.data.data.news_reporter;
       this.check_editor = result.data.data.news_editor;
@@ -111,9 +134,21 @@ export default {
       this.check_content = result.data.data.news_content;
     },
 
+    // 编辑操作
+    handleEdit(index, row) {
+      console.log(row.news_id)
+      searchNews(row.news_id).then(res =>{
+        console.log('-----hot-----:')
+        console.log(res)
+        this.$router.push({
+          name: "news_edit",
+          params: { newsMessage: res.data.data }
+        });
+      });
+    },
+
     // 取消热点设置
     async handleDelete(index, row) {
-      console.log(row);
       this.deleteData.news_id = row.news_id;
       this.deleteData.hot_status = 0;
       const result = await updateNews(this.deleteData);
@@ -135,13 +170,50 @@ export default {
       }
     },
 
-    handleCurrentChange(val) {
-      this.currentRow = val;
+    handleCurrentChange(cpage) {
+      this.currpage = cpage;
+    },
+
+    handleSizeChange(psize) {
+      this.pagesize = psize;
+    },
+
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
     },
 
     // 过滤类型
     filterCategory(value, row) {
       return row.Category.category_name === value;
+    }
+  },
+  computed: {
+    // 根据计算属性模糊搜索
+    tableData() {
+      const search = this.search;
+      if (search) {
+        // filter() 方法创建一个新的数组，新数组中的元素是通过检查指定数组中符合条件的所有元素。
+        // 注意： filter() 不会对空数组进行检测。
+        // 注意： filter() 不会改变原始数组。
+        return this.hotList.filter(data => {
+          // some() 方法用于检测数组中的元素是否满足指定条件;
+          // some() 方法会依次执行数组的每个元素：
+          // 如果有一个元素满足条件，则表达式返回true , 剩余的元素不会再执行检测;
+          // 如果没有满足条件的元素，则返回false。
+          // 注意： some() 不会对空数组进行检测。
+          // 注意： some() 不会改变原始数组。
+          return Object.keys(data).some(key => {
+            // indexOf() 返回某个指定的字符在某个字符串中首次出现的位置，如果没有找到就返回-1；
+            // 该方法对大小写敏感！所以之前需要toLowerCase()方法将所有查询到内容变为小写。
+            return (
+              String(data[key])
+                .toLowerCase()
+                .indexOf(search) > -1
+            );
+          });
+        });
+      }
+      return this.hotList;
     }
   }
 };
@@ -160,5 +232,8 @@ export default {
   border: 0.5px solid #cccccc;
   padding: 20px;
   color: #999999;
+}
+.page {
+  margin: 30px 0;
 }
 </style>

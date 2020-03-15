@@ -70,7 +70,7 @@ export default {
   name: "Login",
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
+      if (validUsername(value) === null) {
         callback(new Error("请输入正确的用户名"));
       } else {
         callback();
@@ -85,19 +85,29 @@ export default {
     };
     return {
       loginForm: {
-        account: "",
-        user_pwd: ""
+        account: '',
+        user_pwd: ''
       },
       loginRules: {
         account: [
-          { required: true, trigger: "blur", validator: validateUsername }
+          {
+            required: true,
+            trigger: 'blur',
+            message: '请输入账号',
+            validator: validateUsername
+          },
+          {
+            min: 5,
+            max: 10,
+            message: '账号长度在 5 到 10 个字符'
+          }
         ],
         user_pwd: [
-          { required: true, trigger: "blur", validator: validatePassword }
+          { required: true, trigger: 'blur', validator: validatePassword }
         ]
       },
       loading: false,
-      passwordType: "password",
+      passwordType: 'password',
       redirect: undefined
     };
   },
@@ -111,10 +121,10 @@ export default {
   },
   methods: {
     showPwd() {
-      if (this.passwordType === "password") {
-        this.passwordType = "";
+      if (this.passwordType === 'password') {
+        this.passwordType = '';
       } else {
-        this.passwordType = "password";
+        this.passwordType = 'password';
       }
       this.$nextTick(() => {
         this.$refs.user_pwd.focus();
@@ -122,23 +132,28 @@ export default {
     },
     // 点击登陆
     handleLogin() {
-      this.$store.dispatch("user/tologin", this.loginForm).then(res => {
-        if (res.data.code === 200) {
-          this.$router.push({ path: this.redirect || "/dashboard" }); //重定向到首页
-          this.loading = false;
-          this.$message({
-            message: "登陆成功!",
-            type: "success"
-          });
-          console.log(store.getters.roles)
-          console.log(store.getters.rolesname)
-        } else if (res.data.code === 400) {
-          this.$router.push({ path: "/login" }); //重定向到login，重新登陆
-          this.$message({
-            message: "用户名或密码错误!"
-          });
-        }
-      });
+      if (this.loginForm.account === '' || this.loginForm.user_pwd === '') {
+        this.$message({
+          message: '请输入账号或密码!',
+          type: 'warning'
+        });
+      } else {
+        this.$store.dispatch('user/tologin', this.loginForm).then(res => {
+          if (res.data.code === 200) {
+            this.$router.push({ path: this.redirect || '/dashboard' }); //重定向到首页
+            this.loading = false;
+            this.$message({
+              message: '登陆成功!',
+              type: 'success'
+            });
+          } else if (res.data.code === 400) {
+            this.$router.push({ path: '/login' }); //重定向到login，重新登陆
+            this.$message({
+              message: '用户名或密码错误!'
+            });
+          }
+        });
+      }
     }
   }
 };
