@@ -21,6 +21,6 @@ export async function updateSlider(form) {
 
 // 删除轮播位
 export async function deleteSlider(sid) {
-  const result = await axios.get("http://47.101.150.127:3030/slider/destroySlide?sid=", sid)
+  const result = await axios.get("http://47.101.150.127:3030/slider/destroySlide?sid=" + sid)
   return result
 }

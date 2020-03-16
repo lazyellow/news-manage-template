@@ -4,26 +4,25 @@
     <el-row class="search" type="flex" justify="left">
       <el-col :span="19"></el-col>
       <el-col :span="4">
-        <el-input v-model="search" size="mini" placeholder="根据姓名搜索" />
+        <el-input v-model="search" size="mini" placeholder="请输入关键字搜索" />
       </el-col>
     </el-row>
     <!-- 表格 -->
     <el-row class="table" type="flex" justify="center">
       <el-col :span="23">
         <el-table
-          :data="tableList.filter(data => !search || data.account.toLowerCase().includes(search.toLowerCase()))"
+          :data="tableData.slice((currpage - 1) * pagesize, currpage * pagesize)"
           border
           highlight-current-row
-          @current-change="handleCurrentChange"
           column-key="date"
           :close-on-click-modal="false"
         >
           <el-table-column label="信息ID" prop="Userinfo_id"></el-table-column>
           <el-table-column label="账号ID" prop="user_id"></el-table-column>
-          <el-table-column label="姓名" prop="UserInfo.Userinfo_name"></el-table-column>
-          <el-table-column label="性别" prop="UserInfo.Userinfo_sex"></el-table-column>
-          <el-table-column label="联系电话" prop="UserInfo.Userinfo_phone"></el-table-column>
-          <el-table-column label="电子邮箱" prop="UserInfo.Userinfo_email"></el-table-column>
+          <el-table-column label="姓名" prop="Userinfo_name"></el-table-column>
+          <el-table-column label="性别" prop="Userinfo_sex"></el-table-column>
+          <el-table-column label="联系电话" prop="Userinfo_phone"></el-table-column>
+          <el-table-column label="电子邮箱" prop="Userinfo_email"></el-table-column>
           <el-table-column label="操作" prop>
             <template slot-scope="scope">
               <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
@@ -32,37 +31,12 @@
                 type="success"
                 @click="handleRole(scope.$index, scope.row)"
               >查看角色</el-button>
-              <!-- 编辑弹窗 -->
-              <el-dialog title="修改账户" 
-                :visible.sync="dialogFormVisible"
-                :close-on-click-modal="false"
-                >
-                <el-form :model="edit_form" :rules="formRules">
-                  <el-form-item label="姓名" :label-width="formLabelWidth" prop="userinfo_name">
-                    <el-input v-model="edit_form.userinfo_name"></el-input>
-                  </el-form-item>
-                  <el-form-item label="性别" :label-width="formLabelWidth">
-                    <el-radio v-model="edit_form.userinfo_sex" label="男"></el-radio>
-                    <el-radio v-model="edit_form.userinfo_sex" label="女"></el-radio>
-                  </el-form-item>
-                  <el-form-item label="联系电话" :label-width="formLabelWidth" prop="userinfo_phone">
-                    <el-input v-model="edit_form.userinfo_phone"></el-input>
-                  </el-form-item>
-                  <el-form-item label="电子邮箱" :label-width="formLabelWidth" prop="userinfo_email">
-                    <el-input v-model="edit_form.userinfo_email"></el-input>
-                  </el-form-item>
-                </el-form>
-                <div slot="footer" class="dialog-footer">
-                  <el-button @click="dialogFormVisible = false">取 消</el-button>
-                  <el-button type="primary" @click="dialogEditCommit()">确 定</el-button>
-                </div>
-              </el-dialog>
             </template>
           </el-table-column>
         </el-table>
 
         <!--分页-->
-        <!-- <div class="page">
+        <div class="page">
           <el-row type="flex" justify="center">
             <el-col :span="2">
               <el-pagination
@@ -76,10 +50,32 @@
               ></el-pagination>
             </el-col>
           </el-row>
-        </div> -->
-
+        </div>
       </el-col>
     </el-row>
+
+    <!-- 编辑弹窗 -->
+    <el-dialog title="修改账户" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
+      <el-form :model="edit_form" :rules="formRules">
+        <el-form-item label="姓名" :label-width="formLabelWidth" prop="userinfo_name">
+          <el-input v-model="edit_form.userinfo_name"></el-input>
+        </el-form-item>
+        <el-form-item label="性别" :label-width="formLabelWidth">
+          <el-radio v-model="edit_form.userinfo_sex" label="男"></el-radio>
+          <el-radio v-model="edit_form.userinfo_sex" label="女"></el-radio>
+        </el-form-item>
+        <el-form-item label="联系电话" :label-width="formLabelWidth" prop="userinfo_phone">
+          <el-input v-model="edit_form.userinfo_phone"></el-input>
+        </el-form-item>
+        <el-form-item label="电子邮箱" :label-width="formLabelWidth" prop="userinfo_email">
+          <el-input v-model="edit_form.userinfo_email"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogEditCommit()">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -156,8 +152,14 @@ export default {
   created: function() {
     getUserInfo().then(res => {
       for (let item of res.data.data.rows) {
-        this.tableItem = item;
-        this.tableList.push(this.tableItem);
+        this.tableList.push({
+          user_id: item.user_id,
+          Userinfo_id: item.Userinfo_id,
+          Userinfo_name: item.UserInfo.Userinfo_name,
+          Userinfo_sex: item.UserInfo.Userinfo_sex,
+          Userinfo_phone: item.UserInfo.Userinfo_phone,
+          Userinfo_email: item.UserInfo.Userinfo_email
+        });
       }
     });
   },
@@ -166,10 +168,10 @@ export default {
     handleEdit(index, row) {
       this.dialogFormVisible = true;
       this.edit_form.userinfo_id = row.Userinfo_id;
-      this.edit_form.userinfo_name = row.UserInfo.Userinfo_name;
-      this.edit_form.userinfo_sex = row.UserInfo.Userinfo_sex;
-      this.edit_form.userinfo_phone = row.UserInfo.Userinfo_phone;
-      this.edit_form.userinfo_email = row.UserInfo.Userinfo_email;
+      this.edit_form.userinfo_name = row.Userinfo_name;
+      this.edit_form.userinfo_sex = row.Userinfo_sex;
+      this.edit_form.userinfo_phone = row.Userinfo_phone;
+      this.edit_form.userinfo_email = row.Userinfo_email;
     },
 
     //查看角色操作
@@ -214,8 +216,14 @@ export default {
           getUserInfo().then(res => {
             this.tableData.length = 0;
             for (let item of res.data.data.rows) {
-              this.tableItem = item;
-              this.tableData.push(this.tableItem);
+              this.tableList.push({
+                user_id: item.user_id,
+                Userinfo_id: item.Userinfo_id,
+                Userinfo_name: item.UserInfo.Userinfo_name,
+                Userinfo_sex: item.UserInfo.Userinfo_sex,
+                Userinfo_phone: item.UserInfo.Userinfo_phone,
+                Userinfo_email: item.UserInfo.Userinfo_email
+              });
             }
           });
         } else {

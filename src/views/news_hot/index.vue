@@ -12,7 +12,6 @@
           :data="tableData.slice((currpage - 1) * pagesize, currpage * pagesize)"
           border
           highlight-current-row
-          @current-change="handleCurrentChange"
           column-key="date"
         >
           <el-table-column label="热点新闻ID" prop="news_id" width="100"></el-table-column>
@@ -28,12 +27,7 @@
           <el-table-column label="阅读量" prop="read_amount" width="100"></el-table-column>
           <el-table-column label="操作" width="300">
             <template slot-scope="scope">
-              <el-button
-                size="mini"
-                type="success"
-                @click="handleEdit(scope.$index, scope.row)"
-              >查看修改</el-button>
-              <!-- <el-button size="mini" @click="handleCheck(scope.$index, scope.row)">查看内容</el-button> -->
+              <el-button size="mini" @click="handleCheck(scope.$index, scope.row)">查看内容</el-button>
               <el-button size="mini" type="info" @click="handleDelete(scope.$index, scope.row)">取消热点</el-button>
               <!-- 查看弹窗 -->
               <el-dialog :visible.sync="dialogNewsVisible">

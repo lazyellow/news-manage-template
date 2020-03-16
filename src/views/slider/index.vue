@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="content">
     <el-button class="add" icon="el-icon-plus" @click="dialogAddVisible = true">添加轮播图</el-button>
     <!-- 编辑弹窗 -->
     <el-dialog
@@ -64,10 +64,7 @@
               <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
               <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
               <!-- 编辑弹窗 -->
-              <el-dialog title="修改" 
-                :visible.sync="dialogFormVisible"
-                :close-on-click-modal="false"
-                >
+              <el-dialog title="修改" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
                 <el-form :model="edit_form">
                   <el-form-item label="对应新闻ID">
                     <el-input v-model="edit_form.news_id"></el-input>
@@ -160,32 +157,32 @@ export default {
 
     //添加弹窗-取消按钮
     async dialogCancelCommit() {
-      this.add_form.news_id = "",
-      this.add_form.img = "",
-      this.fileImg = "",
-      this.$refs.clear.clearFiles();
+      (this.add_form.news_id = ""),
+        (this.add_form.img = ""),
+        (this.fileImg = ""),
+        this.$refs.clear.clearFiles();
       this.dialogAddVisible = false;
     },
 
     //添加弹窗-右上关闭按钮
     closeAddDialog() {
-      this.add_form.news_id = "",
-      this.add_form.img = "",
-      this.fileImg = "",
-      this.$refs.clear.clearFiles();
+      (this.add_form.news_id = ""),
+        (this.add_form.img = ""),
+        (this.fileImg = ""),
+        this.$refs.clear.clearFiles();
     },
 
     //添加弹窗
     async dialogAddCommit() {
       if (this.fileImg === "" || this.add_form.news_id === "") {
-        if (this.fileImg === "") {
-          this.$message({
-            message: "请添加轮播图",
-            type: "warning"
-          });
-        } else if (this.add_form.news_id === "") {
+        if (this.add_form.news_id === "") {
           this.$message({
             message: "请添加轮播图对应的新闻ID",
+            type: "warning"
+          });
+        } else if (this.fileImg === "") {
+          this.$message({
+            message: "请添加轮播图",
             type: "warning"
           });
         }
@@ -248,12 +245,12 @@ export default {
 
     //提交修改
     async dialogEditCommit() {
-      if(this.edit_form.news_id === ''){
+      if (this.edit_form.news_id === "") {
         this.$message({
-            message: "请输入对应新闻ID",
-            type: "warning"
-          });
-      }else{
+          message: "请输入对应新闻ID",
+          type: "warning"
+        });
+      } else {
         const imgUrl = await this.submitUpload(this.fileImg);
         if (imgUrl.data.code === 200) {
           this.edit_form.img = imgUrl.data.success;
@@ -291,7 +288,7 @@ export default {
       const result = await deleteSlider(row.sid);
       if (result.data.code === 200) {
         this.$message({
-          message: "修改成功",
+          message: "删除成功",
           type: "success"
         });
         getSlider().then(res => {
@@ -304,7 +301,7 @@ export default {
         });
       } else {
         this.$message({
-          message: "修改失败",
+          message: "删除失败",
           type: "warning"
         });
         console.log(result);
@@ -319,6 +316,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.content {
+  margin-bottom: 100px;
+}
 .add {
   margin-top: 20px;
   margin-left: 35px;

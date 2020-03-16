@@ -26,6 +26,7 @@
           accept="image/jpeg, image/gif, image/png"
           list-type="picture-card"
           :on-change="onUploadChange"
+          :on-remove="handleRemove"
           :auto-upload="false"
           :show-file-list="true"
           :limit="1"
@@ -65,7 +66,6 @@
       <el-form-item label="新闻正文">
         <div class="components-container">
           <tinymce v-model="form.news_content" :height="500" />
-          {{this.form.news_content}}
         </div>
       </el-form-item>
       <el-form-item>
@@ -339,7 +339,8 @@ export default {
       this.form.news_time = "",
       this.form.news_content = "",
       this.setHot = "false";
-      tinyMCE.activeEditor.setContent('')
+      this.clearFiles();
+      tinyMCE.activeEditor.setContent("");
       this.$message({
         message: "已清空!",
         type: "success"

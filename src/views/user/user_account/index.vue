@@ -4,7 +4,7 @@
     <el-row class="search" type="flex" justify="left">
       <el-col :span="19"></el-col>
       <el-col :span="4">
-        <el-input v-model="search" size="mini" placeholder="根据账号名称搜索" />
+        <el-input v-model="search" size="mini" placeholder="请输入关键字搜索" />
       </el-col>
     </el-row>
     <!-- 表格 -->
@@ -14,7 +14,6 @@
           :data="tableData.slice((currpage - 1) * pagesize, currpage * pagesize)"
           border
           highlight-current-row
-          @current-change="handleCurrentChange"
           column-key="date"
         >
           <el-table-column label="账号ID" prop="user_id" width="150"></el-table-column>
@@ -140,7 +139,7 @@ export default {
       dialogAddVisible: false,
       dialogFormVisible: false,
       formLabelWidth: "120px",
-      pagesize: 2,
+      pagesize: 10,
       currpage: 1
     };
   },
@@ -184,14 +183,6 @@ export default {
   methods: {
     // 编辑弹窗，数据初始化
     handleEdit(index, row) {
-      console.log(this.pagesize);
-      console.log(this.currpage);
-      console.log(
-        this.tableData.slice(
-          (this.currpage - 1) * this.pagesize,
-          this.currpage * this.pagesize
-        )
-      );
       this.dialogFormVisible = true;
       this.edit_form.user_id = row.user_id;
       this.edit_form.account = row.account;
@@ -308,14 +299,6 @@ export default {
         });
       }
       return this.tableList;
-    }
-  },
-  watch: {
-    tableData: {
-      handler(val) {
-        console.log("测试", val);
-      },
-      deep: true
     }
   }
 };

@@ -3,7 +3,7 @@
     <el-row class="search" type="flex" justify="left">
       <el-col :span="19"></el-col>
       <el-col :span="4">
-        <el-input v-model="search" size="mini" placeholder="请输入新闻标题关键字搜索" />
+        <el-input v-model="search" size="mini" placeholder="请输入关键字搜索" />
       </el-col>
     </el-row>
     <el-row class="table" type="flex" justify="center">
@@ -12,7 +12,6 @@
           :data="tableData.slice((currpage - 1) * pagesize, currpage * pagesize)"
           border
           highlight-current-row
-          @current-change="handleCurrentChange"
           column-key="date"
         >
           <el-table-column label="新闻ID" prop="news_id" width="80"></el-table-column>
@@ -39,8 +38,8 @@
           <el-table-column label="审核人员" prop="news_reviewer" width="150"></el-table-column>
           <el-table-column label="操作" width="300">
             <template slot-scope="scope">
-              <!-- <el-button size="mini" @click="handleLook(scope.$index, scope.row)">查看内容</el-button> -->
-              <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">查看修改</el-button>
+              <el-button size="mini" @click="handleLook(scope.$index, scope.row)">查看内容</el-button>
+              <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
               <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
               <!-- 查看弹窗 -->
               <el-dialog :visible.sync="dialogNewsVisible">
