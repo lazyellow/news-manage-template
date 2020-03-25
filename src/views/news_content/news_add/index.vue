@@ -22,6 +22,7 @@
       </el-form-item>
       <el-form-item label="新闻封面">
         <el-upload
+          ref="imgupload"
           action
           accept="image/jpeg, image/gif, image/png"
           list-type="picture-card"
@@ -94,6 +95,7 @@
 import Tinymce from "@/components/Tinymce";
 import { getCategory } from "@/api/category";
 import { updateNews, uploadImg, addNews } from "@/api/newslist";
+import { getRole } from "@/utils/auth";
 
 export default {
   name: "TinymceDemo",
@@ -314,9 +316,27 @@ export default {
             message: "发布成功！",
             type: "success"
           });
-          this.$router.push({
-            name: "news_list"
-          });
+          (this.form.news_title = ""),
+            (this.form.news_subtitle = ""),
+            (this.form.category_id = ""),
+            (this.form.news_reporter = ""),
+            (this.form.news_editor = ""),
+            (this.form.news_reviewer = ""),
+            (this.form.hot_status = 1),
+            (this.form.news_time = ""),
+            (this.form.news_content = ""),
+            (this.setHot = "false");
+            this.$refs['imgupload'].clearFiles();
+          tinyMCE.activeEditor.setContent("");
+          if (getRole() == "3") {
+            this.$router.push({
+              name: "news_add"
+            });
+          } else if (getRole() == "1" || getRole() == "2") {
+            this.$router.push({
+              name: "news_list"
+            });
+          }
         } else {
           this.$message({
             message: "发布失败！",
@@ -329,22 +349,22 @@ export default {
 
     // 清空
     onClear() {
-      this.form.news_title = "",
-      this.form.news_subtitle = "",
-      this.form.category_id = "",
-      this.form.news_reporter = "",
-      this.form.news_editor = "",
-      this.form.news_reviewer = "",
-      this.form.hot_status = 1,
-      this.form.news_time = "",
-      this.form.news_content = "",
-      this.setHot = "false";
-      this.clearFiles();
-      tinyMCE.activeEditor.setContent("");
+      (this.form.news_title = ""),
+        (this.form.news_subtitle = ""),
+        (this.form.category_id = ""),
+        (this.form.news_reporter = ""),
+        (this.form.news_editor = ""),
+        (this.form.news_reviewer = ""),
+        (this.form.hot_status = 1),
+        (this.form.news_time = ""),
+        (this.form.news_content = ""),
+        (this.setHot = "false");
+      this.$refs['imgupload'].clearFiles();
       this.$message({
         message: "已清空!",
         type: "success"
       });
+      tinyMCE.activeEditor.setContent("");
     }
   }
 };
